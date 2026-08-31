@@ -250,6 +250,28 @@ textarea{resize:vertical; min-height:60px;}
 .log-history{margin-top:26px;}
 .log-history h2{font-family:var(--font-display); font-size:18px; font-weight:700; margin:0 0 12px; color:var(--panel-teal-dark);}
 
+.log-entry-block{border-bottom:1px solid var(--line);}
+.log-entry-summary{
+  display:flex; justify-content:space-between; align-items:center; gap:10px; width:100%;
+  background:none; border:none; padding:12px 4px; cursor:pointer; text-align:left;
+  font-family:var(--font-body); font-size:13.5px; color:var(--ink);
+}
+.log-entry-summary:hover{background:var(--card);}
+.log-entry-summary .le-name{font-weight:600;}
+.log-entry-summary .le-date{color:var(--ink-soft); white-space:nowrap; font-size:12.5px;}
+.log-entry-editor{
+  background:var(--card); border-radius:8px; padding:16px; margin:0 0 14px;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.5), inset -1px -1px 0 rgba(0,0,0,0.08);
+}
+.log-entry-editor .field{margin-bottom:12px;}
+.log-entry-editor .field:last-of-type{margin-bottom:14px;}
+.editor-actions{display:flex; gap:10px; align-items:center;}
+.delete-btn{
+  font-family:var(--font-body); font-weight:600; font-size:13px; color:var(--tomato); background:none;
+  border:1px solid var(--tomato-light); border-radius:7px; padding:10px 14px; cursor:pointer;
+}
+.delete-btn:hover{background:var(--tomato-light);}
+
 .data-section{margin-top:30px; padding-top:20px; border-top:2px solid var(--paper);}
 .data-section h2{font-family:var(--font-display); font-size:18px; font-weight:700; margin:0 0 8px; color:var(--panel-teal-dark);}
 .data-section p{margin:0 0 14px; font-size:13.5px; color:var(--ink-soft); line-height:1.5;}
@@ -405,7 +427,7 @@ textarea{resize:vertical; min-height:60px;}
   <div class="tabs" id="mainTabs">
     <button class="tab-btn active" data-view="tree">Skill Tree</button>
     <button class="tab-btn" data-view="pinned">Pinned</button>
-    <button class="tab-btn" data-view="log">Log a Meal</button>
+    <button class="tab-btn" data-view="log">History</button>
     <button class="tab-btn" data-view="badges">Badges</button>
   </div>
 
@@ -414,32 +436,6 @@ textarea{resize:vertical; min-height:60px;}
   <div class="view" id="view-pinned"></div>
 
   <div class="view" id="view-log">
-    <div class="panel">
-      <div class="field">
-        <label for="logRecipe">Dish</label>
-        <select id="logRecipe"></select>
-      </div>
-      <div class="field">
-        <label for="logDate">Date</label>
-        <input type="date" id="logDate">
-      </div>
-      <div class="field">
-        <label>How'd it go? (optional)</label>
-        <div class="rating-row" id="ratingRow">
-          <span class="rating-star" data-val="1">&#9733;</span>
-          <span class="rating-star" data-val="2">&#9733;</span>
-          <span class="rating-star" data-val="3">&#9733;</span>
-          <span class="rating-star" data-val="4">&#9733;</span>
-          <span class="rating-star" data-val="5">&#9733;</span>
-        </div>
-      </div>
-      <div class="field">
-        <label for="logNotes">Notes (optional)</label>
-        <textarea id="logNotes" placeholder="Too much salt, needs more garlic, wife loved it..."></textarea>
-      </div>
-      <button class="primary-btn" id="logSubmit">Log this meal</button>
-    </div>
-
     <div class="log-history">
       <h2>History</h2>
       <div id="logHistoryList"></div>
@@ -1347,7 +1343,6 @@ const TIER_META = [
 ];
 
 let state = { customRecipes: [], log: [], pinnedIds: [] };
-let selectedRating = 0;
 let previouslyUnlockedTiers = new Set([0]);
 let activeTab = 'tree';
 let activeFilters = new Set();
@@ -1366,8 +1361,20 @@ async function loadData(){
       state.log = parsed.log || [];
       state.pinnedIds = parsed.pinnedIds || [];
       state.customRecipes.forEach(r => { if(!r.tags.includes('side') && !r.tags.includes('main')) r.tags.push('main'); });
+      migrateLogIds();
     }
   }catch(e){ /* no existing data yet, or storage unavailable */ }
+}
+
+function migrateLogIds(){
+  let changed = false;
+  state.log.forEach(e => {
+    if(!e.id){
+      e.id = 'log_' + (e.loggedAt || Date.now()) + '_' + Math.random().toString(36).slice(2, 7);
+      changed = true;
+    }
+  });
+  if(changed) saveData();
 }
 
 async function saveData(){
@@ -1419,12 +1426,13 @@ function showToast(msg){
   t._timer = setTimeout(() => t.classList.remove('show'), 2600);
 }
 
-function logMeal(recipeId, date, rating, notes){
+function logMeal(recipeId){
   const recipe = recipeById(recipeId);
   if(!recipe) return;
   const alreadyCooked = state.log.some(e => e.recipeId === recipeId);
   const xpEarned = alreadyCooked ? Math.max(2, Math.round(recipe.xp / 3)) : recipe.xp;
-  state.log.push({ recipeId, date, rating: rating || null, notes: notes || '', xpEarned, loggedAt: Date.now() });
+  const id = 'log_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+  state.log.push({ id, recipeId, date: todayStr(), rating: null, notes: '', xpEarned, loggedAt: Date.now() });
   saveData();
   showToast(alreadyCooked
     ? `Logged \u201c${recipe.name}\u201d again \u2014 +${xpEarned} XP`
@@ -1584,7 +1592,7 @@ function renderTree(){
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
 
-      logMeal(btn.dataset.recipe, todayStr(), null, '');
+      logMeal(btn.dataset.recipe);
     });
   });
   container.querySelectorAll('.pin-btn').forEach(btn => {
@@ -1595,37 +1603,111 @@ function renderTree(){
   });
 }
 
-function renderLogView(){
-  const select = document.getElementById('logRecipe');
-  select.innerHTML = '';
-  TIER_META.forEach(meta => {
-    if(!isTierUnlocked(meta.n)) return;
-    const group = document.createElement('optgroup');
-    group.label = `Tier ${meta.n} \u2014 ${meta.name}`;
-    allRecipes().filter(r => r.tier === meta.n).forEach(r => {
-      const opt = document.createElement('option');
-      opt.value = r.id; opt.textContent = r.name;
-      group.appendChild(opt);
-    });
-    select.appendChild(group);
-  });
-  document.getElementById('logDate').value = todayStr();
+let expandedLogId = null;
 
+function renderLogView(){
   const historyList = document.getElementById('logHistoryList');
   historyList.innerHTML = '';
   if(state.log.length === 0){
-    historyList.innerHTML = '<p class="empty-note">Nothing logged yet \u2014 cook something and add it here.</p>';
+    historyList.innerHTML = '<p class="empty-note">Nothing logged yet \u2014 hit \u201cI cooked this\u201d on a recipe and it\u2019ll show up here.</p>';
     return;
   }
+
   [...state.log].sort((a,b) => b.loggedAt - a.loggedAt).forEach(entry => {
     const r = recipeById(entry.recipeId);
     if(!r) return;
-    const row = document.createElement('div');
-    row.className = 'log-entry';
-    const stars = entry.rating ? '&#9733;'.repeat(entry.rating) : '';
-    row.innerHTML = `<span class="le-name">${r.name}${stars ? ' &mdash; ' + stars : ''}</span><span class="le-date">${entry.date}</span>`;
-    historyList.appendChild(row);
+    const isOpen = expandedLogId === entry.id;
+    const stars = entry.rating ? '\u2605'.repeat(entry.rating) : '';
+
+    const block = document.createElement('div');
+    block.className = 'log-entry-block';
+    block.innerHTML = `
+      <button class="log-entry-summary" data-toggle="${entry.id}">
+        <span class="le-name">${r.name}${stars ? ' &mdash; ' + stars : ''}</span>
+        <span class="le-date">${entry.date}</span>
+      </button>
+      ${isOpen ? buildLogEditorHtml(entry) : ''}
+    `;
+    historyList.appendChild(block);
   });
+
+  historyList.querySelectorAll('[data-toggle]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.toggle;
+      expandedLogId = (expandedLogId === id) ? null : id;
+      renderLogView();
+    });
+  });
+
+  if(expandedLogId) wireLogEditor(expandedLogId);
+}
+
+function buildLogEditorHtml(entry){
+  const starsHtml = [1,2,3,4,5].map(n =>
+    `<span class="rating-star ${entry.rating && n <= entry.rating ? 'on' : ''}" data-val="${n}">\u2605</span>`
+  ).join('');
+  return `
+    <div class="log-entry-editor">
+      <div class="field">
+        <label>Date</label>
+        <input type="date" class="edit-date" value="${entry.date}">
+      </div>
+      <div class="field">
+        <label>Rating (optional)</label>
+        <div class="rating-row edit-rating">${starsHtml}</div>
+      </div>
+      <div class="field">
+        <label>Notes (optional)</label>
+        <textarea class="edit-notes" placeholder="Used tofu this time, needs more garlic...">${entry.notes || ''}</textarea>
+      </div>
+      <div class="editor-actions">
+        <button class="primary-btn" data-save="${entry.id}">Save</button>
+        <button class="delete-btn" data-delete="${entry.id}">Delete entry</button>
+      </div>
+    </div>
+  `;
+}
+
+function wireLogEditor(id){
+  const container = document.getElementById('logHistoryList');
+  const entry = state.log.find(e => e.id === id);
+  if(!entry) return;
+  let currentRating = entry.rating || 0;
+
+  container.querySelectorAll('.edit-rating .rating-star').forEach(star => {
+    star.addEventListener('click', () => {
+      currentRating = parseInt(star.dataset.val);
+      container.querySelectorAll('.edit-rating .rating-star').forEach(s => s.classList.toggle('on', parseInt(s.dataset.val) <= currentRating));
+    });
+  });
+
+  const saveBtn = container.querySelector(`[data-save="${id}"]`);
+  if(saveBtn){
+    saveBtn.addEventListener('click', () => {
+      const dateVal = container.querySelector('.edit-date').value;
+      const notesVal = container.querySelector('.edit-notes').value;
+      entry.date = dateVal || entry.date;
+      entry.rating = currentRating || null;
+      entry.notes = notesVal;
+      saveData();
+      expandedLogId = null;
+      showToast('Entry updated');
+      render();
+    });
+  }
+
+  const delBtn = container.querySelector(`[data-delete="${id}"]`);
+  if(delBtn){
+    delBtn.addEventListener('click', () => {
+      const proceed = confirm('Delete this log entry? This can\u2019t be undone.');
+      if(!proceed) return;
+      state.log = state.log.filter(e => e.id !== id);
+      saveData();
+      expandedLogId = null;
+      showToast('Entry deleted');
+      render();
+    });
+  }
 }
 
 const BADGE_DEFS = [
@@ -1751,7 +1833,7 @@ function openRecipeDetail(id){
     switchTab('tree');
   });
   document.getElementById('detailCookBtn').addEventListener('click', () => {
-    logMeal(id, todayStr(), null, '');
+    logMeal(id);
     openRecipeDetail(id);
   });
   document.getElementById('detailPinBtn').addEventListener('click', () => {
@@ -1801,7 +1883,7 @@ function renderPinned(){
   });
 
   container.querySelectorAll('[data-cook]').forEach(btn => {
-    btn.addEventListener('click', () => logMeal(btn.dataset.cook, todayStr(), null, ''));
+    btn.addEventListener('click', () => logMeal(btn.dataset.cook));
   });
   container.querySelectorAll('[data-unpin]').forEach(btn => {
     btn.addEventListener('click', () => togglePin(btn.dataset.unpin));
@@ -1831,25 +1913,6 @@ function renderTabLabels(){
 function setupTabs(){
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => switchTab(btn.dataset.view));
-  });
-}
-
-function setupLogForm(){
-  document.querySelectorAll('.rating-star').forEach(star => {
-    star.addEventListener('click', () => {
-      selectedRating = parseInt(star.dataset.val);
-      document.querySelectorAll('.rating-star').forEach(s => s.classList.toggle('on', parseInt(s.dataset.val) <= selectedRating));
-    });
-  });
-  document.getElementById('logSubmit').addEventListener('click', () => {
-    const recipeId = document.getElementById('logRecipe').value;
-    const date = document.getElementById('logDate').value || todayStr();
-    const notes = document.getElementById('logNotes').value;
-    if(!recipeId) return;
-    logMeal(recipeId, date, selectedRating, notes);
-    document.getElementById('logNotes').value = '';
-    selectedRating = 0;
-    document.querySelectorAll('.rating-star').forEach(s => s.classList.remove('on'));
   });
 }
 
@@ -1891,6 +1954,7 @@ function restoreBackup(file){
     state.log = parsed.log || [];
     state.pinnedIds = parsed.pinnedIds || [];
     state.customRecipes.forEach(r => { if(!r.tags.includes('side') && !r.tags.includes('main')) r.tags.push('main'); });
+    migrateLogIds();
     saveData();
     previouslyUnlockedTiers = new Set([0]);
     TIER_META.forEach(m => { if(isTierUnlocked(m.n)) previouslyUnlockedTiers.add(m.n); });
@@ -1913,7 +1977,6 @@ async function init(){
   await loadData();
   TIER_META.forEach(m => { if(isTierUnlocked(m.n)) previouslyUnlockedTiers.add(m.n); });
   setupTabs();
-  setupLogForm();
   setupBackup();
   render();
 }
