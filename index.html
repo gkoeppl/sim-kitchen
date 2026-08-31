@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sim Kitchen</title>
+<meta name="theme-color" content="#22314A">
+<meta name="description" content="A gamified skill tree for learning to cook, together.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sim Kitchen">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Karla:wght@400;500;600;700&display=swap');
 
@@ -1327,19 +1335,19 @@ function recipeById(id){ return allRecipes().find(r => r.id === id); }
 
 async function loadData(){
   try{
-    const res = await window.storage.get(STORAGE_KEY, false);
-    if(res && res.value){
-      const parsed = JSON.parse(res.value);
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
       state.customRecipes = parsed.customRecipes || [];
       state.log = parsed.log || [];
       state.pinnedIds = parsed.pinnedIds || [];
       state.customRecipes.forEach(r => { if(!r.tags.includes('side') && !r.tags.includes('main')) r.tags.push('main'); });
     }
-  }catch(e){ /* no existing data yet */ }
+  }catch(e){ /* no existing data yet, or storage unavailable */ }
 }
 
 async function saveData(){
-  try{ await window.storage.set(STORAGE_KEY, JSON.stringify(state), false); }
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
   catch(e){ console.error('Could not save progress', e); showToast('Couldn\u2019t save \u2014 try again in a moment'); }
 }
 
@@ -1830,6 +1838,12 @@ async function init(){
 }
 
 init();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(err => console.log('Service worker registration failed:', err));
+  });
+}
 </script>
 </body>
 </html>
