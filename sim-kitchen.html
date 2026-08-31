@@ -1,0 +1,1835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sim Kitchen</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Karla:wght@400;500;600;700&display=swap');
+
+:root{
+  --paper:#EFE6C9;
+  --card:#F8F1DC;
+  --ink:#20302B;
+  --ink-soft:#54655F;
+  --sage:#4CAF2E;
+  --sage-light:#DCEEDA;
+  --mustard:#B9863F;
+  --mustard-light:#EDDDB8;
+  --tomato:#C2453B;
+  --tomato-light:#F0D6D2;
+  --locked:#AFC0BA;
+  --line: rgba(32,48,43,0.18);
+  --panel-teal:#42605D;
+  --panel-teal-dark:#2E4644;
+  --frame-navy:#22314A;
+  --frame-navy-dark:#141C2B;
+  --bevel-hi: rgba(255,255,255,0.4);
+  --bevel-lo: rgba(0,0,0,0.35);
+  --font-display: "Comic Sans MS", "Comic Neue", cursive;
+  --font-body: 'Karla', sans-serif;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--frame-navy);
+  color:var(--ink);
+  font-family:var(--font-body);
+  -webkit-font-smoothing:antialiased;
+  padding:18px 14px;
+}
+
+.wrap{
+  max-width:720px;
+  margin:0 auto;
+  padding:28px 20px 80px;
+  background:var(--paper);
+  border-radius:12px;
+  box-shadow: inset 2px 2px 0 var(--bevel-hi), inset -2px -2px 0 rgba(0,0,0,0.4), 0 6px 20px rgba(0,0,0,0.45);
+}
+
+.title-bar{
+  background:var(--frame-navy-dark);
+  margin:-28px -20px 22px -20px;
+  padding:11px 16px;
+  border-radius:12px 12px 0 0;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.15), inset -1px -1px 0 rgba(0,0,0,0.3);
+}
+.title-bar .tb-title{
+  font-family:var(--font-display); font-weight:700; font-size:13px; color:#E7ECF3; letter-spacing:0.3px;
+}
+.title-bar .tb-dots{display:flex; gap:6px;}
+.title-bar .tb-dots i{
+  width:10px; height:10px; border-radius:3px; display:block;
+  box-shadow: inset -1px -1px 0 rgba(0,0,0,0.3), inset 1px 1px 0 rgba(255,255,255,0.35);
+}
+.title-bar .tb-dots i:nth-child(1){background:var(--sage);}
+.title-bar .tb-dots i:nth-child(2){background:var(--mustard);}
+.title-bar .tb-dots i:nth-child(3){background:var(--tomato);}
+
+/* Header */
+.hero{margin-bottom:28px;}
+.hero h1{
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:clamp(26px,6vw,36px);
+  margin:0 0 4px;
+  letter-spacing:0;
+  color:var(--panel-teal-dark);
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.hero h1::before{
+  content:'';
+  width:16px; height:16px;
+  background:var(--sage);
+  transform:rotate(45deg);
+  border-radius:3px;
+  box-shadow: inset -2px -2px 0 rgba(0,0,0,0.25), inset 2px 2px 0 rgba(255,255,255,0.5);
+  flex-shrink:0;
+}
+.hero p.tag{
+  margin:0 0 20px;
+  color:var(--ink-soft);
+  font-size:15px;
+  max-width:46ch;
+  line-height:1.5;
+}
+
+.status{
+  background:var(--panel-teal);
+  border-radius:10px;
+  padding:16px 18px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:18px;
+  align-items:center;
+  justify-content:space-between;
+  box-shadow: inset 2px 2px 0 var(--bevel-hi), inset -2px -2px 0 var(--bevel-lo), 0 3px 6px rgba(0,0,0,0.2);
+}
+.status-block{min-width:160px;flex:1;}
+.status-label{font-size:12px; color:#CFE0DC; margin:0 0 4px; font-weight:600;}
+.status-value{font-family:var(--font-display); font-size:22px; font-weight:700; margin:0; color:#FFFFFF;}
+.xp-bar-track{
+  height:12px; background:var(--panel-teal-dark); border-radius:3px; overflow:hidden; margin-top:8px;
+  box-shadow: inset 1px 1px 3px rgba(0,0,0,0.5);
+  background-image: repeating-linear-gradient(90deg, transparent, transparent 18px, rgba(0,0,0,0.25) 18px, rgba(0,0,0,0.25) 19px);
+}
+.xp-bar-fill{
+  height:100%; background: linear-gradient(180deg, #7CD957, var(--sage)); border-radius:2px; transition:width 0.5s ease;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+}
+.streak-value{font-family:var(--font-display); font-size:22px; font-weight:700; display:flex; align-items:center; gap:6px; color:#FFFFFF;}
+
+/* Tabs */
+.tabs{
+  display:flex; gap:6px; margin:22px 0 24px; padding:6px;
+  background:var(--panel-teal); border-radius:10px;
+  box-shadow: inset 1px 1px 0 var(--bevel-hi), inset -1px -1px 0 var(--bevel-lo);
+}
+.tab-btn{
+  font-family:var(--font-display); font-size:14px; font-weight:700; color:#DCEAE7;
+  background:var(--panel-teal-dark); border:none; border-radius:6px; padding:9px 14px; cursor:pointer;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.15), inset -1px -1px 0 rgba(0,0,0,0.3);
+  transition:transform 0.1s ease;
+}
+.tab-btn:hover{color:#FFFFFF;}
+.tab-btn.active{
+  background:var(--mustard); color:var(--ink);
+  box-shadow: inset 2px 2px 4px rgba(0,0,0,0.35), inset -1px -1px 0 rgba(255,255,255,0.25);
+}
+
+.view{display:none;}
+.view.active{display:block;}
+
+/* Tier sections */
+.tier{margin-bottom:34px;}
+.tier-head{
+  display:flex; align-items:baseline; justify-content:space-between;
+  border-bottom:2px solid var(--panel-teal); padding-bottom:8px; margin-bottom:14px;
+}
+.tier-head h2{font-family:var(--font-display); font-weight:700; font-size:19px; margin:0; color:var(--panel-teal-dark);}
+.tier-head .tier-num{color:var(--mustard);}
+.tier-progress{font-size:13px; color:var(--ink-soft); font-weight:600;}
+.tier-lock-note{font-size:13.5px; color:var(--ink-soft); margin:-6px 0 14px; font-style:italic;}
+.tier-horizon-note{font-size:13.5px; color:var(--ink-soft); margin:-6px 0 14px;}
+
+.tier.just-unlocked{animation: revealTier 0.7s ease;}
+@keyframes revealTier{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+.card-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:12px;}
+
+.recipe-card{
+  background:var(--card); border-radius:6px; padding:14px 15px;
+  display:flex; flex-direction:column; gap:8px; cursor:pointer;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.6), inset -1px -1px 0 rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.12);
+  transition:transform 0.1s ease;
+}
+.recipe-card:hover{transform:translateY(-2px);}
+.recipe-card.locked{opacity:0.5; cursor:default; filter:grayscale(0.4);}
+.recipe-card.locked:hover{transform:none;}
+.recipe-card h3{font-family:var(--font-display); font-size:16.5px; font-weight:600; margin:0; line-height:1.3;}
+.recipe-card .desc{font-size:13.5px; color:var(--ink-soft); line-height:1.45; margin:0;}
+.chip-row{display:flex; flex-wrap:wrap; gap:5px;}
+.chip{font-size:11.5px; padding:2px 8px; border-radius:20px; color:var(--ink);}
+.chip.tag-quick{background:var(--mustard-light);}
+.chip.tag-family{background:var(--tomato-light);}
+.chip.tag-freezer{background:var(--sage-light);}
+.chip.tag-vegetarian{background:#E2E9E9;}
+.chip.tag-side{background:#EDE3F0;}
+.chip.tag-main{background:#DCE6EE;}
+.chip.tag-airfryer{background:#D9E9F2; border:1px solid #A8C7DB;}
+
+.filter-bar{display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-bottom:22px;}
+.filter-chip{
+  font-family:var(--font-body); font-weight:600; font-size:13px; color:var(--ink-soft);
+  background:var(--card); border:1px solid var(--line); border-radius:20px; padding:6px 13px; cursor:pointer;
+}
+.filter-chip:hover{border-color:var(--ink-soft);}
+.filter-chip.active{background:var(--sage); border-color:var(--sage); color:#FFFFFF;}
+.filter-clear{
+  font-family:var(--font-body); font-weight:600; font-size:12.5px; color:var(--ink-soft); background:none;
+  border:none; text-decoration:underline; cursor:pointer; padding:6px 2px;
+}
+.filter-empty-note{color:var(--ink-soft); font-size:13.5px; font-style:italic; padding:6px 0;}
+
+.pin-btn{
+  font-family:var(--font-body); font-weight:600; font-size:12px; color:var(--ink-soft); background:var(--card);
+  border:1px solid var(--line); border-radius:6px; padding:6px 9px; cursor:pointer; white-space:nowrap;
+}
+.pin-btn:hover{border-color:var(--ink-soft); color:var(--ink);}
+.pin-btn.pinned{background:var(--mustard-light); border-color:var(--mustard); color:var(--ink);}
+.pin-btn-detail{margin-left:auto;}
+
+.card-foot{display:flex; align-items:center; gap:8px; margin-top:auto; padding-top:6px;}
+.xp-tag{font-size:12.5px; color:var(--ink-soft); flex:1; font-weight:600;}
+.cook-btn{
+  font-family:var(--font-display); font-weight:700; font-size:13px; background:var(--sage); color:#FFFFFF;
+  border:none; border-radius:6px; padding:7px 12px; cursor:pointer;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.4), inset -1px -1px 0 rgba(0,0,0,0.25);
+}
+.cook-btn:hover{background:#3F9424;}
+.cook-btn.done{background:var(--sage-light); color:var(--sage); box-shadow:none;}
+.lock-note{font-size:12px; color:var(--ink-soft); display:flex; align-items:center; gap:5px;}
+
+
+/* Log a meal view */
+.panel{background:var(--card); border-radius:10px; padding:20px; box-shadow: inset 1px 1px 0 rgba(255,255,255,0.6), inset -1px -1px 0 rgba(0,0,0,0.08);}
+.field{margin-bottom:16px;}
+.field label{display:block; font-size:13px; color:var(--ink-soft); margin-bottom:5px; font-weight:600;}
+select, input[type=date], input[type=text], input[type=number], textarea{
+  width:100%; font-family:var(--font-body); font-size:14.5px; padding:9px 10px;
+  border:1px solid var(--line); border-radius:6px; background:var(--paper); color:var(--ink);
+  box-shadow: inset 1px 1px 2px rgba(0,0,0,0.12);
+}
+textarea{resize:vertical; min-height:60px;}
+.rating-row{display:flex; gap:6px;}
+.rating-star{font-size:22px; cursor:pointer; color:var(--locked); user-select:none;}
+.rating-star.on{color:var(--mustard);}
+.primary-btn{
+  font-family:var(--font-display); font-weight:700; font-size:14.5px; background:var(--sage); color:#FFFFFF;
+  border:none; border-radius:7px; padding:11px 18px; cursor:pointer;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.4), inset -1px -1px 0 rgba(0,0,0,0.25);
+}
+.primary-btn:hover{background:#3F9424;}
+.primary-btn:disabled{background:var(--locked); cursor:not-allowed; box-shadow:none;}
+
+.log-history{margin-top:26px;}
+.log-history h2{font-family:var(--font-display); font-size:18px; font-weight:700; margin:0 0 12px; color:var(--panel-teal-dark);}
+.log-entry{display:flex; justify-content:space-between; gap:10px; padding:10px 0; border-bottom:1px solid var(--line); font-size:13.5px;}
+.log-entry .le-name{font-weight:600;}
+.log-entry .le-date{color:var(--ink-soft); white-space:nowrap;}
+.empty-note{color:var(--ink-soft); font-size:13.5px; font-style:italic;}
+
+/* Badges */
+.badge-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px;}
+.badge-card{
+  background:var(--card); border-radius:8px; padding:14px; opacity:0.4; filter:grayscale(0.5);
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.5), inset -1px -1px 0 rgba(0,0,0,0.08);
+}
+.badge-card.earned{
+  opacity:1; filter:none;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.6), inset -1px -1px 0 rgba(0,0,0,0.08), 0 0 0 2px var(--mustard);
+}
+.badge-card h3{font-family:var(--font-display); font-weight:700; font-size:15px; margin:0 0 4px; color:var(--panel-teal-dark);}
+.badge-card p{font-size:12.5px; color:var(--ink-soft); margin:0; line-height:1.4;}
+
+/* Recipe detail view */
+.back-link{
+  display:inline-flex; align-items:center; gap:6px; background:none; border:none; cursor:pointer;
+  font-family:var(--font-display); font-weight:700; font-size:14px; color:var(--panel-teal-dark); padding:0 0 18px;
+}
+.back-link:hover{color:var(--ink);}
+.detail-head{margin-bottom:18px;}
+.detail-head h2{font-family:var(--font-display); font-size:clamp(22px,5vw,28px); font-weight:700; margin:0 0 8px; color:var(--panel-teal-dark);}
+.detail-meta{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:10px; font-size:13px; color:var(--ink-soft); font-weight:600;}
+.detail-meta .dot{opacity:0.5;}
+.detail-desc{font-size:14.5px; color:var(--ink-soft); line-height:1.5; margin:0 0 4px;}
+
+.detail-grid{display:grid; grid-template-columns:1fr; gap:22px;}
+@media(min-width:600px){ .detail-grid{grid-template-columns:1fr 1.4fr;} }
+
+.detail-box{
+  background:var(--card); border-radius:10px; padding:18px 20px;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.6), inset -1px -1px 0 rgba(0,0,0,0.08);
+}
+.detail-box h3{
+  font-family:var(--font-display); font-size:16px; font-weight:700; margin:0 0 12px; color:var(--panel-teal-dark);
+  border-bottom:2px solid var(--paper); padding-bottom:8px;
+}
+.ingredient-list{list-style:none; margin:0; padding:0;}
+.ingredient-list li{
+  display:flex; justify-content:space-between; gap:10px; font-size:14px; padding:6px 0;
+  border-bottom:1px dotted var(--line);
+}
+.ingredient-list li:last-child{border-bottom:none;}
+.ingredient-amt{color:var(--ink-soft); white-space:nowrap; font-variant-numeric:tabular-nums;}
+
+.step-list{margin:0; padding:0; list-style:none; counter-reset:step;}
+.step-list li{
+  counter-increment:step; position:relative; padding:0 0 16px 34px; font-size:14.5px; line-height:1.55;
+}
+.step-list li:last-child{padding-bottom:0;}
+.step-list li::before{
+  content:counter(step); position:absolute; left:0; top:0; width:24px; height:24px; border-radius:50%;
+  background:var(--sage); color:#FFFFFF; font-family:var(--font-display); font-weight:700;
+  font-size:13px; display:flex; align-items:center; justify-content:center;
+  box-shadow: inset -1px -1px 0 rgba(0,0,0,0.2);
+}
+
+.spice-tip-box{
+  margin-top:16px; background:var(--sage-light); border-radius:8px; padding:12px 14px; font-size:13.5px;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.4);
+}
+.spice-tip-box strong{display:block; margin-bottom:4px; font-family:var(--font-display); font-size:14px; color:var(--panel-teal-dark);}
+.spice-tip-box p{margin:0; line-height:1.5; color:var(--ink);}
+
+.mistakes-box{
+  margin-top:16px; background:var(--tomato-light); border-radius:8px; padding:12px 14px; font-size:13.5px;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.4);
+}
+.mistakes-box strong{display:block; margin-bottom:6px; font-family:var(--font-display); font-size:14px; color:var(--panel-teal-dark);}
+.mistakes-box ul{margin:0; padding-left:18px;}
+.mistakes-box li{margin-bottom:4px; line-height:1.5;}
+.mistakes-box li:last-child{margin-bottom:0;}
+
+.side-suggestion{
+  margin-top:16px; background:var(--mustard-light); border-radius:8px; padding:12px 14px; font-size:13.5px;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.4);
+}
+.side-suggestion strong{display:block; margin-bottom:6px; font-family:var(--font-display); font-size:14px; color:var(--panel-teal-dark);}
+.side-link-row{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:6px;}
+.side-link-row:last-child{margin-bottom:0;}
+.side-link{
+  font-family:var(--font-body); font-weight:600; font-size:12.5px; background:var(--card); color:var(--ink);
+  border:1px solid var(--line); border-radius:20px; padding:5px 12px; cursor:pointer;
+}
+.side-link:hover{border-color:var(--ink-soft);}
+.side-note{margin:0; color:var(--ink); line-height:1.5;}
+
+.placeholder-note{
+  background:var(--card); border:2px dashed var(--locked); border-radius:10px; padding:24px; text-align:center;
+  color:var(--ink-soft); font-size:14px; line-height:1.6;
+}
+
+.detail-cook-btn{margin-top:20px;}
+
+
+/* Toast */
+.toast{
+  position:fixed; bottom:22px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--panel-teal-dark);
+  color:#FFFFFF; padding:11px 18px; border-radius:8px; font-size:14px; font-weight:600; opacity:0;
+  pointer-events:none; transition:opacity 0.25s ease, transform 0.25s ease; z-index:50; max-width:88vw; text-align:center;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.15), 0 4px 10px rgba(0,0,0,0.3);
+}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+@media(max-width:480px){
+  .status{flex-direction:column; align-items:stretch;}
+  body{padding:10px 6px;}
+  .wrap{padding:24px 16px 70px;}
+  .title-bar{margin:-24px -16px 20px -16px;}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="title-bar">
+    <span class="tb-title">Sim Kitchen</span>
+    <div class="tb-dots"><i></i><i></i><i></i></div>
+  </div>
+
+  <div class="hero">
+    <h1>Sim Kitchen</h1>
+    <p class="tag">From grilled cheese to a proper Sunday roast &mdash; a shared skill tree for two people learning to cook, one dish at a time.</p>
+  </div>
+
+  <div class="status">
+    <div class="status-block">
+      <p class="status-label" id="levelLabel">Level 1</p>
+      <p class="status-value" id="xpValue">0 XP</p>
+      <div class="xp-bar-track"><div class="xp-bar-fill" id="xpBarFill" style="width:0%"></div></div>
+    </div>
+    <div class="status-block" style="flex:0 0 auto; text-align:right;">
+      <p class="status-label">Streak</p>
+      <p class="streak-value" id="streakValue">no streak yet</p>
+    </div>
+  </div>
+
+  <div class="tabs" id="mainTabs">
+    <button class="tab-btn active" data-view="tree">Skill Tree</button>
+    <button class="tab-btn" data-view="pinned">Pinned</button>
+    <button class="tab-btn" data-view="log">Log a Meal</button>
+    <button class="tab-btn" data-view="badges">Badges</button>
+  </div>
+
+  <div class="view active" id="view-tree"></div>
+
+  <div class="view" id="view-pinned"></div>
+
+  <div class="view" id="view-log">
+    <div class="panel">
+      <div class="field">
+        <label for="logRecipe">Dish</label>
+        <select id="logRecipe"></select>
+      </div>
+      <div class="field">
+        <label for="logDate">Date</label>
+        <input type="date" id="logDate">
+      </div>
+      <div class="field">
+        <label>How'd it go? (optional)</label>
+        <div class="rating-row" id="ratingRow">
+          <span class="rating-star" data-val="1">&#9733;</span>
+          <span class="rating-star" data-val="2">&#9733;</span>
+          <span class="rating-star" data-val="3">&#9733;</span>
+          <span class="rating-star" data-val="4">&#9733;</span>
+          <span class="rating-star" data-val="5">&#9733;</span>
+        </div>
+      </div>
+      <div class="field">
+        <label for="logNotes">Notes (optional)</label>
+        <textarea id="logNotes" placeholder="Too much salt, needs more garlic, wife loved it..."></textarea>
+      </div>
+      <button class="primary-btn" id="logSubmit">Log this meal</button>
+    </div>
+
+    <div class="log-history">
+      <h2>History</h2>
+      <div id="logHistoryList"></div>
+    </div>
+  </div>
+
+  <div class="view" id="view-badges">
+    <div class="badge-grid" id="badgeGrid"></div>
+  </div>
+
+  <div class="view" id="view-detail"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+const STORAGE_KEY = 'cookquest-data';
+
+// Ingredient shorthand: [name, amount, unit]  — metric, sized for German grocery shopping (REWE/Edeka etc.)
+const SEED_RECIPES = [
+  // ---------- TIER 0 — Fundamentals ----------
+  {
+    id:'t0-1', tier:0, name:'Grilled Cheese Sandwich', desc:'Bread, butter, cheese, patience.', xp:10,
+    tags:['quick','vegetarian'], servings:2, prepTime:'5 min', cookTime:'6 min',
+    ingredients:[
+      ['Bread','4','slices'],['Butter','30','g'],['Cheese slices (Gouda or cheddar)','120','g']
+    ],
+    steps:[
+      'Butter one side of each slice of bread.',
+      'Build two sandwiches with the cheese in the middle, buttered sides facing out.',
+      'Heat a pan over medium heat and add the sandwiches.',
+      'Cook 3–4 minutes per side, pressing gently, until golden and the cheese has melted.',
+      'Slice diagonally and serve while hot.'
+    ],
+    mistakes:[
+      'Heat too high burns the bread before the cheese melts — medium, not medium-high.',
+      'Skimping on butter makes it dry and can tear the bread; be generous.',
+      'Flipping too soon before the underside is fully golden tends to fall apart.'
+    ],
+    spiceTip:'A pinch of dried oregano or smoked paprika worked into the butter adds a nice edge.',
+    sideIds:['t0-4'], side:'A bowl of tomato soup works too, if you have some on hand.'
+  },
+  {
+    id:'t0-2', tier:0, name:'Scrambled Eggs', desc:'Low heat, don\u2019t rush it.', xp:10,
+    tags:['quick','vegetarian','family'], servings:2, prepTime:'3 min', cookTime:'4 min',
+    ingredients:[
+      ['Eggs','4','pcs'],['Butter','15','g'],['Milk (optional)','30','ml'],['Salt',null,'to taste'],['Pepper',null,'to taste']
+    ],
+    steps:[
+      'Whisk the eggs with the milk, salt, and pepper until fully combined.',
+      'Melt the butter in a non-stick pan over low heat.',
+      'Pour in the eggs and let them sit for 20 seconds before gently pushing them from the edges toward the centre.',
+      'Keep folding gently over low heat until just set but still a little glossy, about 3–4 minutes.',
+      'Remove from the heat immediately — they keep cooking in the pan.'
+    ],
+    mistakes:[
+      'High heat is the number one cause of rubbery, grey eggs — keep it low the whole time.',
+      'Leaving them in the pan until they look "done" overcooks them; they firm up more off the heat.',
+      'Too much milk makes them watery rather than creamy — a splash is plenty.'
+    ],
+    spiceTip:'Chives or a pinch of smoked paprika stirred in at the end brighten these up.',
+    sideIds:['s0-3'], side:'Sautéed spinach turns this into a full breakfast.'
+  },
+  {
+    id:'t0-3', tier:0, name:'Buttered Pasta with Garlic & Parmesan', desc:'Boil, drain, toss, done.', xp:10,
+    tags:['quick','vegetarian'], servings:2, prepTime:'5 min', cookTime:'12 min',
+    ingredients:[
+      ['Pasta','250','g'],['Butter','40','g'],['Garlic','2','cloves'],['Parmesan, grated','40','g'],
+      ['Salt',null,'to taste'],['Pepper',null,'to taste']
+    ],
+    steps:[
+      'Bring a large pot of salted water to a boil and cook the pasta according to the package.',
+      'While the pasta cooks, finely mince the garlic.',
+      'Reserve a cup of pasta water, then drain the pasta.',
+      'In the same pot, melt the butter over medium-low heat and sauté the garlic for 1 minute — don\u2019t let it brown.',
+      'Add the pasta back in with a splash of pasta water and the parmesan. Toss until glossy, season, and serve.'
+    ],
+    mistakes:[
+      'Under-salting the pasta water is the most common miss — it should taste like the sea.',
+      'Browned garlic turns bitter fast; keep the heat medium-low and watch it closely.',
+      'Skipping the reserved pasta water leaves the sauce greasy instead of glossy and clingy.'
+    ],
+    spiceTip:'Red pepper flakes or a bit of lemon zest lift this a lot.',
+    sideIds:['t0-4'], side:null
+  },
+  {
+    id:'t0-4', tier:0, name:'Simple Green Salad with Vinaigrette', desc:'Leaves plus a proper vinaigrette.', xp:5,
+    tags:['quick','vegetarian','side'], servings:2, prepTime:'8 min', cookTime:null,
+    ingredients:[
+      ['Mixed salad greens','150','g'],['Olive oil','3','tbsp'],['Vinegar (white wine or apple cider)','1','tbsp'],
+      ['Mustard','1','tsp'],['Salt',null,'to taste'],['Pepper',null,'to taste']
+    ],
+    steps:[
+      'Whisk the vinegar and mustard together in a small bowl.',
+      'Slowly whisk in the olive oil until the dressing looks smooth and slightly thick.',
+      'Season with salt and pepper.',
+      'Toss the greens with just enough dressing to coat lightly — don\u2019t drown them.'
+    ],
+    mistakes:[
+      'Dressing the greens too early wilts them — toss right before serving.',
+      'Wet, unspun greens dilute the dressing and make it slide off.',
+      'Pouring on too much dressing masks the greens instead of coating them.'
+    ],
+    spiceTip:'A pinch of dried oregano or fresh dill in the vinaigrette adds character.'
+  },
+  {
+    id:'t0-5', tier:0, name:'Stovetop Mac and Cheese', desc:'The American classic — hard to find ready-made in Germany, easy to make.', xp:10,
+    tags:['quick','vegetarian','family'], servings:2, prepTime:'10 min', cookTime:'15 min',
+    ingredients:[
+      ['Macaroni','250','g'],['Butter','30','g'],['Flour','30','g'],['Milk','500','ml'],
+      ['Cheddar, grated','200','g'],['Salt',null,'to taste'],['Mustard powder (optional)','1','pinch']
+    ],
+    steps:[
+      'Cook the macaroni in salted water until just al dente, then drain.',
+      'In the same pot, melt the butter over medium heat and whisk in the flour. Cook for 1 minute, stirring constantly.',
+      'Slowly whisk in the milk, a little at a time, until smooth. Simmer, stirring, until it thickens enough to coat the back of a spoon.',
+      'Remove from heat and stir in the cheddar and mustard powder until melted and smooth.',
+      'Fold the macaroni back in, season with salt, and serve.'
+    ],
+    mistakes:[
+      'Dumping in all the milk at once causes lumps — add it gradually while whisking.',
+      'Boiling the sauce once the cheese is in makes it grainy; keep the heat off or very low.',
+      'Pre-shredded cheese has anti-caking coating that melts unevenly — grate a block yourself if you can.'
+    ],
+    spiceTip:'A pinch of cayenne or smoked paprika in the sauce adds warmth without much heat.',
+    sideIds:['t0-4','s0-2'], side:null
+  },
+  {
+    id:'t0-6', tier:0, name:'Sausages with Mash', desc:'Pan-fried sausages, proper mashed potato.', xp:10,
+    tags:['family'], servings:2, prepTime:'15 min', cookTime:'20 min',
+    ingredients:[
+      ['Potatoes','600','g'],['Butter','40','g'],['Milk','100','ml'],['Sausages (Bratwurst work well)','4','pcs'],
+      ['Salt',null,'to taste'],['Pepper',null,'to taste']
+    ],
+    steps:[
+      'Peel and quarter the potatoes, then boil in salted water until a knife slides in easily, about 15–18 minutes.',
+      'Drain well, then mash with the butter and milk until smooth. Season to taste.',
+      'While the potatoes cook, pan-fry the sausages over medium heat, turning occasionally, until browned all over and cooked through, about 12–15 minutes.',
+      'Serve the sausages on top of the mash.'
+    ],
+    mistakes:[
+      'High heat browns the sausage skins before the inside is cooked — go medium and be patient.',
+      'Skipping a good drain leaves the mash watery no matter how much you beat it.',
+      'Cold milk and butter straight from the fridge can make mash gluey — warm them slightly first.'
+    ],
+    spiceTip:'Nutmeg in the mash and a little thyme on the sausages both work well.',
+    side:'Fried onions or a spoon of peas round this out well — no recipe needed for either.'
+  },
+
+  {
+    id:'t0-7', tier:0, name:'French Toast', desc:'Sweet breakfast, great use for stale bread.', xp:10,
+    tags:['quick','vegetarian','family'], servings:2, prepTime:'5 min', cookTime:'8 min',
+    ingredients:[
+      ['Bread, ideally a day old','4','slices'],['Eggs','2','pcs'],['Milk','100','ml'],
+      ['Cinnamon','1','pinch'],['Sugar','1','tbsp'],['Butter, for frying','20','g']
+    ],
+    steps:[
+      'Whisk the eggs, milk, cinnamon, and sugar together in a shallow dish.',
+      'Dip each slice of bread in the mixture for about 20 seconds per side, letting it soak in without falling apart.',
+      'Melt the butter in a pan over medium heat.',
+      'Fry the soaked slices for 2–3 minutes per side, until golden brown.',
+      'Serve with syrup, fruit, or a dusting of sugar.'
+    ],
+    mistakes:[
+      'Soaking too long makes the bread fall apart when you try to move it.',
+      'Heat too high burns the outside before the egg inside fully cooks.',
+      'Fresh, soft bread turns mushy — day-old bread holds up much better.'
+    ],
+    spiceTip:'A pinch of nutmeg alongside the cinnamon rounds out the spice nicely.'
+  },
+  {
+    id:'t0-8', tier:0, name:'Vegetable Quesadillas', desc:'Cheese and whatever\u2019s in the fridge, folded and fried.', xp:10,
+    tags:['quick','vegetarian','family'], servings:2, prepTime:'10 min', cookTime:'8 min',
+    ingredients:[
+      ['Large tortillas','4','pcs'],['Cheese, grated','200','g'],['Bell pepper','1','pcs'],
+      ['Red onion','0.5','pcs'],['Corn (tinned or frozen)','100','g'],['Oil','1','tbsp']
+    ],
+    steps:[
+      'Finely chop the bell pepper and onion. Sauté with the corn in oil until softened, about 4 minutes.',
+      'Lay a tortilla in a dry pan over medium heat. Scatter cheese and the vegetable mix over one half, then fold the tortilla over.',
+      'Cook for 2–3 minutes per side, pressing down gently, until golden and the cheese has melted.',
+      'Repeat with the remaining tortillas, then slice each into wedges.'
+    ],
+    mistakes:[
+      'Overfilling makes it hard to flip and the filling spills out.',
+      'Pan too hot browns the tortilla before the cheese has melted through.',
+      'Skipping a gentle press with the spatula leaves uneven melting.'
+    ],
+    spiceTip:'Cumin or smoked paprika stirred into the sautéed vegetables adds real depth.',
+    sideIds:['t0-4'], side:null
+  },
+  {
+    id:'t0-9', tier:0, name:'Fried Rice', desc:'The best reason to cook extra rice the night before.', xp:10,
+    tags:['quick','vegetarian','family'], servings:2, prepTime:'5 min', cookTime:'10 min',
+    ingredients:[
+      ['Cooked rice, cold (ideally a day old)','400','g'],['Eggs','2','pcs'],
+      ['Frozen peas and carrots','150','g'],['Soy sauce','3','tbsp'],['Spring onion','2','pcs'],
+      ['Neutral oil','2','tbsp'],['Garlic','1','clove']
+    ],
+    steps:[
+      'Heat half the oil in a wide pan or wok over high heat. Scramble the eggs quickly, then remove and set aside.',
+      'Add the remaining oil, then the garlic and peas and carrots. Stir-fry for 2 minutes.',
+      'Add the cold rice, breaking up any clumps with your spatula, and stir-fry for 4–5 minutes until heated through and starting to catch slightly at the edges.',
+      'Return the eggs to the pan, add the soy sauce, and toss everything together.',
+      'Top with sliced spring onion and serve.'
+    ],
+    mistakes:[
+      'Freshly cooked, warm rice turns mushy and clumps together — cold, day-old rice is what makes this work. Your rice cooker\u2019s perfect for prepping a batch the night before.',
+      'An overcrowded pan steams the rice instead of frying it.',
+      'Too much soy sauce all at once makes it soggy and overly salty — add it gradually and taste.'
+    ],
+    spiceTip:'White pepper is traditional here rather than black, plus a dash of sesame oil at the end.'
+  },
+  {
+    id:'t0-10', tier:0, name:'Baked Beans on Toast', desc:'A genuinely fast, filling weeknight standby.', xp:10,
+    tags:['quick','vegetarian','family'], servings:2, prepTime:'2 min', cookTime:'8 min',
+    ingredients:[
+      ['Tinned baked beans','400','g'],['Bread','4','slices'],['Butter','20','g'],
+      ['Cheese, grated (optional)','50','g'],['Black pepper',null,'to taste']
+    ],
+    steps:[
+      'Heat the beans in a small pot over medium heat, stirring occasionally, for 5–6 minutes until hot throughout.',
+      'Toast the bread and butter it.',
+      'Spoon the hot beans over the toast, top with cheese if using, and finish with a crack of black pepper.'
+    ],
+    mistakes:[
+      'High heat scorches the beans on the bottom of the pot — medium heat with regular stirring is safer.',
+      'Under-toasted bread goes soggy fast under hot beans — toast it properly.',
+      'Skipping the pepper at the end is a small thing that actually makes a real difference.'
+    ],
+    spiceTip:'A pinch of smoked paprika or a dash of hot sauce livens these up a lot.'
+  },
+
+  // ---------- TIER 1 — Building Blocks ----------
+  {
+    id:'t1-1', tier:1, name:'Vegetable Stir-Fry (with optional tofu or chicken)', desc:'High heat, cut everything first.', xp:15,
+    tags:['quick','vegetarian','family'], servings:2, prepTime:'10 min', cookTime:'10 min',
+    ingredients:[
+      ['Mixed vegetables (bell pepper, broccoli, carrot)','400','g'],
+      ['Tofu or chicken breast (optional)','200','g'],
+      ['Soy sauce','3','tbsp'],['Garlic','2','cloves'],['Fresh ginger','1','tsp, grated'],
+      ['Neutral oil','2','tbsp'],['Cornstarch','1','tsp']
+    ],
+    steps:[
+      'Cut all vegetables into similar-sized pieces so they cook evenly. If using tofu or chicken, cut into bite-sized cubes.',
+      'Mix the soy sauce with the cornstarch and a splash of water — this becomes your sauce.',
+      'Heat the oil in a wide pan or wok over high heat. If using tofu or chicken, sear it first until browned, then set aside.',
+      'Add the vegetables and stir-fry for 4–5 minutes, keeping them moving so they don\u2019t burn.',
+      'Add the garlic and ginger, stir for 30 seconds, then return the tofu or chicken to the pan.',
+      'Pour in the sauce and toss everything until glossy and slightly thickened, about 1 minute.'
+    ],
+    mistakes:[
+      'Overcrowding the pan steams the vegetables instead of searing them — cook in batches if needed.',
+      'Cutting pieces unevenly means some burn while others stay raw.',
+      'Mixing the sauce mid-stir-fry instead of beforehand risks burning the garlic while you scramble.'
+    ],
+    spiceTip:'A pinch of five-spice or chili flakes with the garlic and ginger deepens the flavor.',
+    sideIds:['s0-1'], side:null
+  },
+  {
+    id:'t1-2', tier:1, name:'Tomato Sauce from Scratch', desc:'Tinned tomatoes, garlic, time.', xp:15,
+    tags:['vegetarian','freezer'], servings:4, prepTime:'10 min', cookTime:'30 min',
+    ingredients:[
+      ['Crushed tomatoes (tinned)','800','g'],['Onion','1','pcs'],['Garlic','3','cloves'],
+      ['Olive oil','3','tbsp'],['Sugar','1','tsp'],['Dried basil (or fresh, if you have it)','1','tsp'],['Salt',null,'to taste']
+    ],
+    steps:[
+      'Finely dice the onion and mince the garlic.',
+      'Heat the olive oil in a pot over medium heat and sauté the onion until soft and translucent, about 5 minutes.',
+      'Add the garlic and cook for 1 more minute.',
+      'Pour in the tomatoes, sugar, basil, and salt. Stir well.',
+      'Simmer uncovered over low heat for 25–30 minutes, stirring occasionally, until thickened.',
+      'Blend with a hand blender for a smooth sauce, or leave it chunky — your call.'
+    ],
+    mistakes:[
+      'Rushing the onion leaves a raw, sharp taste running through the whole sauce.',
+      'A hard boil instead of a gentle simmer causes splattering and uneven reduction.',
+      'Forgetting to taste and adjust salt or sugar at the end — tinned tomatoes vary a lot in acidity.'
+    ],
+    spiceTip:'A pinch of chili flakes or a bay leaf while it simmers adds real depth.',
+    sideIds:['s0-3'], side:'Toss with pasta as the main event. Freezes well in portions for up to 3 months.'
+  },
+  {
+    id:'t1-3', tier:1, name:'Käsespätzle', desc:'German cheese noodles, caramelized onions.', xp:15,
+    tags:['vegetarian','family'], servings:2, prepTime:'10 min', cookTime:'25 min',
+    ingredients:[
+      ['Spätzle (fresh or dried)','400','g'],['Grated cheese (Emmentaler or Gruyère)','200','g'],
+      ['Onions, sliced','2','large'],['Butter','20','g']
+    ],
+    steps:[
+      'Melt the butter in a pan over medium-low heat and add the sliced onions.',
+      'Cook slowly, stirring occasionally, until deep golden and caramelized — this takes about 20 minutes, don\u2019t rush it.',
+      'Meanwhile, cook the spätzle according to the package (fresh spätzle only needs a couple of minutes in boiling water).',
+      'Drain the spätzle and return it to the warm pot. Layer it with the cheese, stirring gently over low heat until melted and everything is combined.',
+      'Top with the crispy caramelized onions and serve immediately.'
+    ],
+    mistakes:[
+      'Rushing the onions with high heat burns them instead of caramelizing — low and slow is non-negotiable here.',
+      'Pre-shredded cheese with anti-caking coating won\u2019t melt as smoothly as a block you grate yourself.',
+      'Not draining the spätzle well leaves the dish watery and dilutes the cheese.'
+    ],
+    spiceTip:'A little nutmeg mixed into the cheese layer is a classic German touch.',
+    sideIds:['t0-4'], side:null
+  },
+  {
+    id:'t1-4', tier:1, name:'Vegetable Omelet', desc:'Whatever\u2019s wilting in the fridge.', xp:15,
+    tags:['quick','vegetarian'], servings:2, prepTime:'8 min', cookTime:'6 min',
+    ingredients:[
+      ['Eggs','4','pcs'],['Mixed vegetables (bell pepper, mushroom, spinach)','150','g'],
+      ['Cheese, grated (optional)','50','g'],['Butter','15','g'],['Salt',null,'to taste'],['Pepper',null,'to taste']
+    ],
+    steps:[
+      'Chop the vegetables into small pieces. Sauté in a splash of oil or butter until softened, then set aside.',
+      'Whisk the eggs with salt and pepper.',
+      'Melt the butter in a non-stick pan over medium heat and pour in the eggs.',
+      'Let the eggs cook undisturbed until mostly set but still a little wet on top, about 2–3 minutes.',
+      'Scatter the vegetables and cheese over one half, then fold the other half over.',
+      'Slide onto a plate and serve.'
+    ],
+    mistakes:[
+      'Watery vegetables (like un-drained sautéed mushrooms) make the whole omelet soggy.',
+      'Folding before the eggs have mostly set causes it to break apart.',
+      'A pan that isn\u2019t hot enough leads to sticking — let it heat up before the eggs go in.'
+    ],
+    spiceTip:'Smoked paprika or fresh chives finish this nicely.',
+    sideIds:['s0-3'], side:null
+  },
+  {
+    id:'t1-5', tier:1, name:'Linsensuppe (German Lentil Soup)', desc:'A German classic, built from scratch.', xp:15,
+    tags:['vegetarian','freezer','family'], servings:4, prepTime:'12 min', cookTime:'30 min',
+    ingredients:[
+      ['Red or brown lentils','250','g'],['Carrots','2','pcs'],['Celery','2','stalks'],['Onion','1','pcs'],
+      ['Vegetable stock','1','l'],['Tomato paste','2','tbsp'],['Ground cumin','1','tsp'],
+      ['Vinegar','1','splash'],['Olive oil','2','tbsp']
+    ],
+    steps:[
+      'Dice the onion, carrots, and celery into small, even pieces.',
+      'Heat the oil in a large pot and sauté the onion, carrot, and celery for about 5 minutes, until softened.',
+      'Stir in the tomato paste and cumin, and cook for 1 minute to deepen the flavour.',
+      'Add the lentils and stock. Bring to a boil, then reduce to a simmer.',
+      'Cook for 25–30 minutes, until the lentils are tender and the soup has thickened.',
+      'Finish with a splash of vinegar and season to taste.'
+    ],
+    mistakes:[
+      'Skipping a rinse leaves grit in the lentils — always rinse until the water runs clear.',
+      'Adding the vinegar too early can keep the lentils from softening properly; add it at the end.',
+      'Under-salting until the very end mutes the whole pot — season in stages and taste as you go.'
+    ],
+    spiceTip:'A bay leaf while it simmers, or a pinch of smoked paprika, deepens the flavor.',
+    sideIds:['s0-3'], side:'Sliced sausage (Würstchen) stirred in is a common German addition if you want meat without really cooking it.'
+  },
+  {
+    id:'t1-6', tier:1, name:'Baked Salmon with Lemon', desc:'Oven, foil, fifteen minutes.', xp:15,
+    tags:['quick'], servings:2, prepTime:'5 min', cookTime:'14 min',
+    ingredients:[
+      ['Salmon fillets','2','pcs (~300 g)'],['Lemon','1','pcs'],['Olive oil','2','tbsp'],
+      ['Salt',null,'to taste'],['Pepper',null,'to taste'],['Fresh dill (optional)',null,'a few sprigs']
+    ],
+    steps:[
+      'Preheat the oven to 200°C.',
+      'Place the salmon fillets on a lined baking tray.',
+      'Drizzle with olive oil, season with salt and pepper, and top with thin lemon slices.',
+      'Bake for 12–15 minutes, until the salmon flakes easily with a fork.',
+      'Scatter with fresh dill if using, and serve.'
+    ],
+    mistakes:[
+      'Even a few extra minutes in the oven dries salmon out — start checking at 12 minutes.',
+      'Fish straight from the fridge cooks unevenly; a few minutes at room temperature helps.',
+      'Not patting the fillets dry first leads to steaming rather than a bit of browning.'
+    ],
+    spiceTip:'Dill is the classic pairing, but smoked paprika or garlic powder work well too.',
+    sideIds:['s0-4','s0-2'], side:null
+  },
+
+  {
+    id:'t1-7', tier:1, name:'Shakshuka', desc:'Eggs poached in a spiced tomato sauce.', xp:15,
+    tags:['vegetarian','family'], servings:2, prepTime:'10 min', cookTime:'20 min',
+    ingredients:[
+      ['Onion','1','pcs'],['Bell pepper','1','pcs'],['Garlic','2','cloves'],['Ground cumin','1','tsp'],
+      ['Paprika','1','tsp'],['Crushed tomatoes (tinned)','400','g'],['Eggs','4','pcs'],
+      ['Olive oil','2','tbsp'],['Salt',null,'to taste'],['Fresh parsley (optional)',null,'a small handful']
+    ],
+    steps:[
+      'Heat the oil in a wide pan and sauté the diced onion and pepper until softened, about 6 minutes.',
+      'Add the garlic, cumin, and paprika, and cook for 1 minute until fragrant.',
+      'Pour in the tomatoes, season, and simmer uncovered for 10 minutes until slightly thickened.',
+      'Make four small wells in the sauce and crack an egg into each.',
+      'Cover and cook for 6–8 minutes, until the whites are set but the yolks are still soft.',
+      'Scatter with parsley and serve straight from the pan.'
+    ],
+    mistakes:[
+      'Covering the pan before the wells are made lets the eggs run together into the sauce.',
+      'Cooking uncovered takes far longer for the whites to set, and the yolks overcook by then.',
+      'A sauce that\u2019s still thin when the eggs go in makes for a watery finished dish — let it reduce first.'
+    ],
+    spiceTip:'A pinch of cayenne or a dash of harissa if you want real heat.',
+    sideIds:['s0-3'], side:null
+  },
+  {
+    id:'t1-8', tier:1, name:'Chickpea Curry', desc:'Mild, forgiving, and freezes beautifully.', xp:15,
+    tags:['vegetarian','freezer','family'], servings:4, prepTime:'15 min', cookTime:'35 min',
+    ingredients:[
+      ['Onion','1','pcs'],['Garlic','3','cloves'],['Fresh ginger, grated','1','tbsp'],
+      ['Curry powder','2','tbsp'],['Ground cumin','1','tsp'],['Chickpeas (tinned)','800','g'],
+      ['Coconut milk (tinned)','400','ml'],['Crushed tomatoes (tinned)','400','g'],
+      ['Oil','2','tbsp'],['Salt',null,'to taste'],['Fresh cilantro (optional)',null,'a small handful']
+    ],
+    steps:[
+      'Sauté the diced onion in oil until soft, about 6 minutes.',
+      'Add the garlic, ginger, curry powder, and cumin, and cook for 1 minute until fragrant.',
+      'Add the drained chickpeas, coconut milk, and tomatoes. Stir to combine.',
+      'Simmer uncovered for 25–30 minutes, stirring occasionally, until thickened.',
+      'Season with salt to taste and finish with cilantro.'
+    ],
+    mistakes:[
+      'Skipping the minute of toasting the spices in oil leaves the curry tasting flat and raw.',
+      'A hard boil instead of a gentle simmer can cause the coconut milk to split.',
+      'Salting too early alongside the tomatoes can slow the chickpeas softening further — season toward the end instead.'
+    ],
+    spiceTip:'Garam masala stirred in right at the end, rather than cooked the whole time, adds a lot of fragrance.',
+    sideIds:['s0-1'], side:'Prefer the slow cooker? Sauté the onion, garlic, and spices first, then transfer everything to the slow cooker and cook on low for 4–5 hours instead of simmering on the stove.'
+  },
+  {
+    id:'t1-9', tier:1, name:'Frittata', desc:'Oven-baked eggs, more forgiving than an omelet.', xp:15,
+    tags:['vegetarian','family'], servings:2, prepTime:'10 min', cookTime:'20 min',
+    ingredients:[
+      ['Eggs','6','pcs'],['Milk','50','ml'],['Mixed vegetables (zucchini, bell pepper, spinach)','200','g'],
+      ['Cheese, grated','80','g'],['Olive oil','2','tbsp'],['Salt',null,'to taste'],['Pepper',null,'to taste']
+    ],
+    steps:[
+      'Preheat the oven to 180°C.',
+      'In an oven-safe pan, sauté the vegetables in the oil until softened, about 5 minutes.',
+      'Whisk the eggs, milk, salt, and pepper together and pour over the vegetables in the pan.',
+      'Sprinkle the cheese on top. Cook on the stovetop over low heat for 3–4 minutes, until the edges begin to set.',
+      'Transfer the pan to the oven and bake for 12–15 minutes, until fully set and lightly golden.',
+      'Let it rest a few minutes before slicing.'
+    ],
+    mistakes:[
+      'Skipping the stovetop head start means a longer, less evenly cooked bake.',
+      'An oven that\u2019s too hot puffs the frittata up fast and then deflates it — keep it moderate.',
+      'Cutting into it straight from the oven makes it fall apart; a short rest firms it up.'
+    ],
+    spiceTip:'Fresh chives or a pinch of nutmeg both work nicely here.',
+    sideIds:['t0-4'], side:null
+  },
+  {
+    id:'t1-10', tier:1, name:'Ratatouille', desc:'French vegetable stew, good knife-skill practice.', xp:15,
+    tags:['vegetarian','freezer','family'], servings:4, prepTime:'20 min', cookTime:'40 min',
+    ingredients:[
+      ['Eggplant','1','pcs'],['Zucchini','2','pcs'],['Bell peppers','2','pcs'],['Onion','1','pcs'],
+      ['Garlic','3','cloves'],['Crushed tomatoes (tinned)','400','g'],['Olive oil','4','tbsp'],
+      ['Dried herbes de Provence (or thyme/oregano)','1','tsp'],['Salt',null,'to taste'],['Pepper',null,'to taste']
+    ],
+    steps:[
+      'Cut all the vegetables into even, bite-sized chunks.',
+      'Heat half the oil in a large pot and sauté the onion until soft, about 5 minutes.',
+      'Add the garlic and cook for 1 minute.',
+      'Add the eggplant and remaining oil, cooking for 5 minutes, stirring, until it starts to soften.',
+      'Add the zucchini and peppers, and cook for another 5 minutes.',
+      'Pour in the tomatoes and herbs, season, and simmer uncovered for 25–30 minutes, stirring occasionally, until everything is tender and the mixture has thickened.'
+    ],
+    mistakes:[
+      'Adding all the vegetables at once cooks them unevenly — add the hardest ones first, softest last.',
+      'Not enough oil for the eggplant leaves it tough and spongy instead of silky.',
+      'Rushing the simmer keeps it watery instead of rich and thick — give it the full time.'
+    ],
+    spiceTip:'A bay leaf while it simmers, and fresh basil at the end, both add a lot.',
+    sideIds:['s0-3'], side:null
+  },
+  {
+    id:'t1-11', tier:1, name:'Flammkuchen', desc:'German flatbread, crème fraîche, onion, and bacon.', xp:15,
+    tags:['family'], servings:2, prepTime:'20 min (plus 15 min dough rest)', cookTime:'12 min',
+    ingredients:[
+      ['Flour','250','g'],['Water','130','ml'],['Olive oil','2','tbsp'],['Salt','0.5','tsp'],
+      ['Crème fraîche','150','g'],['Onion, thinly sliced','1','pcs'],
+      ['Bacon lardons (or mushrooms for a vegetarian version)','100','g'],
+      ['Nutmeg','1','pinch'],['Black pepper',null,'to taste']
+    ],
+    steps:[
+      'Mix the flour, water, olive oil, and salt into a smooth dough. Knead briefly, then let it rest, covered, for 15 minutes.',
+      'Preheat the oven as high as it will go (around 250°C), with a baking tray inside to heat up.',
+      'Roll the dough out very thin on a sheet of baking paper.',
+      'Spread the crème fraîche evenly over the dough, leaving a small border.',
+      'Scatter with the onion and bacon (or mushrooms). Season with nutmeg and pepper.',
+      'Slide onto the hot tray and bake for 10–12 minutes, until the edges are crisp and browned.'
+    ],
+    mistakes:[
+      'Dough rolled too thick loses the traditional cracker-crisp texture — go as thin as you can manage.',
+      'An oven (and tray) that isn\u2019t fully preheated gives a soggy base instead of a crisp one.',
+      'Too much crème fraîche makes it heavy — a thin, even layer is all it needs.'
+    ],
+    spiceTip:'Caraway seeds scattered over the top before baking are a traditional touch.',
+    sideIds:['t0-4'], side:null
+  },
+  {
+    id:'t1-12', tier:1, name:'Falafel (Air Fryer)', desc:'Crisp chickpea fritters, without the deep-fry mess.', xp:15,
+    tags:['vegetarian','family'], servings:2, prepTime:'20 min (plus overnight soak)', cookTime:'14 min',
+    ingredients:[
+      ['Dried chickpeas, soaked overnight (not cooked)','200','g'],['Onion','0.25','pcs'],
+      ['Garlic','2','cloves'],['Fresh parsley',null,'a handful'],['Fresh cilantro',null,'a handful'],
+      ['Ground cumin','1','tsp'],['Ground coriander','1','tsp'],['Baking powder','0.5','tsp'],
+      ['Flour','2','tbsp'],['Salt',null,'to taste'],['Oil spray',null,'for the air fryer']
+    ],
+    steps:[
+      'Drain the soaked (still raw) chickpeas well.',
+      'Blend the chickpeas, onion, garlic, parsley, cilantro, cumin, coriander, and salt in a food processor until finely chopped but not pureed — it should hold together when pressed.',
+      'Stir in the baking powder and flour.',
+      'Shape into small balls or patties.',
+      'Preheat the air fryer to 190°C. Lightly spray the falafel with oil and arrange in a single layer.',
+      'Air fry for 12–15 minutes, shaking or turning halfway, until golden and crisp.'
+    ],
+    mistakes:[
+      'Using cooked or tinned chickpeas instead of soaked-but-raw ones makes the mixture too wet, and the falafel fall apart — dried, soaked chickpeas are essential.',
+      'Over-blending into a smooth paste rather than a coarse mixture loses the texture and can turn gummy.',
+      'Skipping the oil spray in the air fryer gives a dry, pale result instead of golden and crisp.'
+    ],
+    spiceTip:'A pinch of cayenne in the mix adds background heat without overpowering the herbs.',
+    sideIds:['s0-6'], side:'Great tucked into pita with the hummus and veggie plate, or served over salad.'
+  },
+  {
+    id:'t1-13', tier:1, name:'Vegetable Fried Rice with Egg', desc:'A step up in technique from the Tier 0 version.', xp:15,
+    tags:['quick','vegetarian','family'], servings:2, prepTime:'8 min', cookTime:'12 min',
+    ingredients:[
+      ['Cooked rice, cold (ideally a day old)','500','g'],['Eggs','3','pcs'],['Carrot, diced small','1','pcs'],
+      ['Frozen peas','100','g'],['Spring onion','3','pcs'],['Garlic','2','cloves'],
+      ['Fresh ginger, grated','1','tsp'],['Soy sauce','3','tbsp'],['Sesame oil','1','tsp'],
+      ['Neutral oil','3','tbsp'],['White pepper','1','pinch']
+    ],
+    steps:[
+      'Heat two-thirds of the oil in a wok or wide pan over high heat. Add the carrot and peas and stir-fry for 2 minutes.',
+      'Push the vegetables to one side of the pan. Add the remaining oil to the empty side and crack the eggs directly in, scrambling them right there in the pan.',
+      'Once the eggs are mostly set, mix everything together.',
+      'Add the cold rice, breaking up any clumps, and stir-fry for 4–5 minutes until hot and starting to catch slightly at the edges.',
+      'Add the garlic, ginger, and the white parts of the spring onion. Stir for 1 minute.',
+      'Season with soy sauce, sesame oil, and white pepper. Finish with the green spring onion tops.'
+    ],
+    mistakes:[
+      'Scrambling the eggs in a separate pan instead of directly in the wok skips the classic technique and loses flavor that builds from cooking everything together.',
+      'Adding the garlic and ginger too early burns them before the rice even goes in.',
+      'Warm, freshly cooked rice instead of cold, day-old rice turns the whole dish mushy.'
+    ],
+    spiceTip:'White pepper rather than black is traditional; a dash of chili oil at the end is great if you like heat.'
+  },
+  {
+    id:'t1-14', tier:1, name:'Currywurst', desc:'Very German, very fast, genuinely fun to make.', xp:15,
+    tags:['quick','family'], servings:2, prepTime:'5 min', cookTime:'20 min',
+    ingredients:[
+      ['Bratwurst or other pork sausages','4','pcs'],['Ketchup','200','g'],['Curry powder','2','tsp (plus extra for dusting)'],
+      ['Onion powder','0.5','tsp'],['Oil, for frying','1','tbsp']
+    ],
+    steps:[
+      'Pan-fry or grill the sausages until browned and cooked through, about 12–15 minutes, then slice into bite-sized pieces.',
+      'Meanwhile, warm the ketchup in a small pot with the curry powder and onion powder, stirring, for about 5 minutes to let the spices bloom.',
+      'Pour the sauce over the sliced sausage.',
+      'Dust with a little extra curry powder on top before serving.'
+    ],
+    mistakes:[
+      'Skipping the step of warming the sauce with the spices leaves it tasting like plain ketchup instead of developing the real currywurst flavor.',
+      'Slicing the sausage before it\u2019s fully cooked through lets the juices escape and dries it out.',
+      'Too much curry powder mixed into the sauce itself can turn bitter — dust extra on top instead of all mixed in.'
+    ],
+    spiceTip:'A pinch of cayenne in the sauce for those who like more heat.',
+    sideIds:['s1-1'], side:'Traditionally served with fries (Pommes) on the side.'
+  },
+
+  // ---------- Sides (Tier 0) ----------
+  {
+    id:'s0-1', tier:0, name:'Steamed Rice', desc:'The reliable base for almost anything saucy.', xp:5,
+    tags:['quick','vegetarian','side'], servings:2, prepTime:'2 min', cookTime:'20 min',
+    ingredients:[
+      ['Rice (long-grain or basmati)','200','g'],['Water','400','ml'],['Salt','1','pinch']
+    ],
+    steps:[
+      'Rinse the rice in cold water until the water runs mostly clear.',
+      'Add the rice, water, and salt to a pot and bring to a boil.',
+      'Reduce to the lowest heat, cover, and simmer for 12–15 minutes without lifting the lid.',
+      'Remove from heat and let it sit, covered, for 5 minutes before fluffing with a fork.'
+    ],
+    mistakes:[
+      'Lifting the lid to check lets steam escape and can leave the rice undercooked.',
+      'Skipping the rinse gives gummier, stickier rice than most dishes want.',
+      'Fluffing immediately instead of resting first makes it clump.'
+    ],
+    spiceTip:'A bay leaf or a cardamom pod in the cooking water adds subtle fragrance.'
+  },
+  {
+    id:'s0-2', tier:0, name:'Steamed Green Vegetables', desc:'Broccoli or green beans, just enough bite.', xp:5,
+    tags:['quick','vegetarian','side'], servings:2, prepTime:'5 min', cookTime:'6 min',
+    ingredients:[
+      ['Broccoli or green beans','300','g'],['Butter (optional)','15','g'],['Salt',null,'to taste']
+    ],
+    steps:[
+      'Bring a pot with a steamer basket (or a splash of water) to a simmer.',
+      'Add the vegetables and cover. Steam for 4–6 minutes, until bright green and just tender.',
+      'Toss with butter and salt if using, and serve right away.'
+    ],
+    mistakes:[
+      'A minute or two too long turns them grey and mushy — check early.',
+      'Salting before steaming rather than after can draw out water and dull the color.',
+      'Overcrowding the steamer basket cooks the vegetables unevenly.'
+    ],
+    spiceTip:'A squeeze of lemon and a pinch of chili flakes after steaming brightens these up.'
+  },
+  {
+    id:'s0-3', tier:0, name:'Warm Crusty Bread', desc:'Bakery bread, five minutes in the oven.', xp:5,
+    tags:['quick','vegetarian','side'], servings:2, prepTime:'3 min', cookTime:'7 min',
+    ingredients:[
+      ['Crusty bread (a fresh Brötchen or baguette)','1','loaf'],['Butter (optional)','30','g'],['Garlic, minced (optional)','1','clove']
+    ],
+    steps:[
+      'Preheat the oven to 200°C.',
+      'If using garlic butter, mash the softened butter and garlic together and spread it over sliced bread.',
+      'Warm the bread in the oven for 5–8 minutes, until the crust is crisp and the inside is soft.'
+    ],
+    mistakes:[
+      'Putting bread in before the oven is fully preheated leaves it soft instead of crisp.',
+      'Leaving it in too long dries the whole loaf out.',
+      'Garlic butter close to a broiler element can burn fast — keep an eye on it.'
+    ],
+    spiceTip:'Garlic and rosemary worked into the butter turns this into a real side dish.'
+  },
+  {
+    id:'s0-4', tier:0, name:'Boiled Potatoes with Butter & Herbs', desc:'Small potatoes, simply done.', xp:5,
+    tags:['quick','vegetarian','side'], servings:2, prepTime:'5 min', cookTime:'17 min',
+    ingredients:[
+      ['Small potatoes','500','g'],['Butter','20','g'],['Fresh parsley or chives, chopped (optional)',null,'a small handful'],
+      ['Salt',null,'to taste']
+    ],
+    steps:[
+      'Scrub the potatoes and add them whole to a pot of salted water.',
+      'Bring to a boil and cook for 15–18 minutes, until a knife slides in easily.',
+      'Drain, then toss with butter, herbs, and salt while still hot.'
+    ],
+    mistakes:[
+      'Starting in already-boiling water cooks the outside before the inside is done — start cold.',
+      'Skipping salt in the water leaves them bland no matter how much you add after.',
+      'A few extra minutes and they start falling apart — check with a knife at 15.'
+    ],
+    spiceTip:'Fresh dill or chives are classic here; a pinch of nutmeg is a nice German touch too.'
+  },
+
+  {
+    id:'s0-5', tier:0, name:'Caprese Salad', desc:'Tomato, mozzarella, basil, no cooking at all.', xp:5,
+    tags:['quick','vegetarian','side','family'], servings:2, prepTime:'10 min', cookTime:null,
+    ingredients:[
+      ['Ripe tomatoes','3','pcs'],['Fresh mozzarella','200','g'],['Fresh basil leaves',null,'a handful'],
+      ['Olive oil','2','tbsp'],['Balsamic vinegar (optional)','1','tbsp'],['Salt',null,'to taste'],['Pepper',null,'to taste']
+    ],
+    steps:[
+      'Slice the tomatoes and mozzarella into rounds of similar thickness.',
+      'Arrange them alternating and slightly overlapping on a plate.',
+      'Tuck basil leaves between the slices.',
+      'Drizzle with olive oil and balsamic vinegar, then season with salt and pepper.'
+    ],
+    mistakes:[
+      'Cold mozzarella straight from the fridge tastes bland — let it come to room temperature first.',
+      'Under-ripe or watery tomatoes lack flavor — use the ripest ones you can find.',
+      'Drowning it in balsamic overwhelms the simplicity of the dish — a light drizzle is enough.'
+    ],
+    spiceTip:'A pinch of dried oregano alongside the fresh basil is classic in parts of Italy.'
+  },
+  {
+    id:'s0-6', tier:0, name:'Hummus & Veggie Plate', desc:'No-cook dip, good for using up raw vegetables.', xp:5,
+    tags:['quick','vegetarian','side','family'], servings:2, prepTime:'12 min', cookTime:null,
+    ingredients:[
+      ['Chickpeas (tinned)','400','g'],['Tahini','2','tbsp'],['Lemon juice','2','tbsp'],['Garlic','1','clove'],
+      ['Olive oil','3','tbsp'],['Ground cumin','0.5','tsp'],['Water','2-3','tbsp'],['Salt',null,'to taste'],
+      ['Raw vegetables for dipping (carrot, cucumber, bell pepper)','300','g']
+    ],
+    steps:[
+      'Drain and rinse the chickpeas.',
+      'Blend the chickpeas, tahini, lemon juice, garlic, cumin, and salt until smooth, adding water a tablespoon at a time to loosen it.',
+      'Drizzle with olive oil.',
+      'Cut the vegetables into sticks and serve alongside.'
+    ],
+    mistakes:[
+      'Skipping the gradual water addition leaves it too thick to blend smoothly.',
+      'A whole raw garlic clove can overpower the dip fast — a small one goes a long way.',
+      'Not blending long enough leaves it grainy instead of creamy.'
+    ],
+    spiceTip:'A pinch of smoked paprika on top, or a little cayenne blended in, adds warmth.'
+  },
+  {
+    id:'s0-7', tier:0, name:'Coleslaw', desc:'Cabbage, carrot, a simple dressing.', xp:5,
+    tags:['quick','vegetarian','side','family'], servings:2, prepTime:'12 min', cookTime:null,
+    ingredients:[
+      ['White cabbage, shredded','300','g'],['Carrot, grated','1','pcs'],['Mayonnaise','3','tbsp'],
+      ['Apple cider vinegar','1','tbsp'],['Sugar','1','tsp'],['Salt',null,'to taste'],['Pepper',null,'to taste']
+    ],
+    steps:[
+      'Shred the cabbage finely and grate the carrot.',
+      'Whisk the mayonnaise, vinegar, sugar, salt, and pepper together.',
+      'Toss the cabbage and carrot with the dressing until well coated.',
+      'Let it sit for 10 minutes before serving so the flavors can meld.'
+    ],
+    mistakes:[
+      'Serving it immediately without resting misses the cabbage softening slightly, which is part of the texture.',
+      'Under-seasoning the dressing leaves the whole thing tasting flat.',
+      'Adding all the dressing at once can overwhelm it — add gradually and taste as you go.'
+    ],
+    spiceTip:'Celery seed is the classic addition if you have it in the cupboard.'
+  },
+  {
+    id:'s0-8', tier:0, name:'Gurkensalat (German Cucumber Salad)', desc:'Quick, common alongside schnitzel-style mains.', xp:5,
+    tags:['quick','vegetarian','side'], servings:2, prepTime:'12 min', cookTime:null,
+    ingredients:[
+      ['Cucumber','1','large'],['White wine vinegar','2','tbsp'],['Water','2','tbsp'],['Sugar','1','tsp'],
+      ['Fresh dill, chopped',null,'a small handful'],['Salt',null,'to taste'],['Pepper',null,'to taste'],
+      ['Sour cream (optional)','2','tbsp']
+    ],
+    steps:[
+      'Slice the cucumber very thin (a mandoline helps if you have one).',
+      'Sprinkle with salt and let it sit in a colander for 10 minutes to draw out water, then pat dry.',
+      'Whisk the vinegar, water, sugar, and dill together (stir in the sour cream if using).',
+      'Toss the cucumber with the dressing. Chill briefly before serving if you have time.'
+    ],
+    mistakes:[
+      'Skipping the salting step leaves the salad watery and dilutes the dressing.',
+      'Slicing too thick loses the traditional silky texture in favor of crunch.',
+      'Dressing it too far ahead of time can make it overly soft.'
+    ],
+    spiceTip:'Dill is essential here; a pinch of white pepper is traditional too.'
+  },
+  {
+    id:'s0-9', tier:0, name:'Air Fryer Sweet Potato Wedges', desc:'Crisp wedges, minimal effort.', xp:5,
+    tags:['quick','vegetarian','side','airfryer'], servings:2, prepTime:'8 min', cookTime:'18 min',
+    ingredients:[
+      ['Sweet potatoes','2','medium'],['Olive oil','1.5','tbsp'],['Paprika','1','tsp'],
+      ['Salt',null,'to taste'],['Pepper',null,'to taste']
+    ],
+    steps:[
+      'Cut the sweet potatoes into even wedges.',
+      'Toss with olive oil, paprika, salt, and pepper.',
+      'Arrange in a single layer in the air fryer basket, working in batches if needed.',
+      'Air fry at 200°C for 15–18 minutes, shaking the basket halfway, until crisp at the edges and tender inside.'
+    ],
+    mistakes:[
+      'Overlapping wedges in the basket steams them instead of crisping — work in batches if they don\u2019t fit in one layer.',
+      'Skipping the halfway shake leads to uneven cooking.',
+      'Cutting wedges unevenly means some finish well before others.'
+    ],
+    spiceTip:'A pinch of cinnamon alongside the paprika brings out the sweetness.'
+  },
+
+  // ---------- Sides (Tier 1) ----------
+  {
+    id:'s1-1', tier:1, name:'Bratkartoffeln (German Fried Potatoes)', desc:'Crisp pan-fried potatoes with onion.', xp:5,
+    tags:['vegetarian','side'], servings:2, prepTime:'10 min', cookTime:'20 min',
+    ingredients:[
+      ['Potatoes, boiled and cooled (or leftover)','500','g'],['Onion','1','pcs'],['Butter or oil','3','tbsp'],
+      ['Salt',null,'to taste'],['Pepper',null,'to taste']
+    ],
+    steps:[
+      'Slice the cooked potatoes into rounds and thinly slice the onion.',
+      'Heat the butter or oil in a large pan over medium-high heat.',
+      'Add the potatoes in a single layer and let them fry undisturbed for a few minutes until golden on one side before flipping.',
+      'Add the onion partway through and continue frying until both are crisp and golden, about 15–20 minutes total.',
+      'Season with salt and pepper and serve hot.'
+    ],
+    mistakes:[
+      'Overcrowding the pan steams the potatoes instead of crisping them — use a wide pan or work in batches.',
+      'Stirring too often stops a crust from forming; leave them be for a few minutes at a time.',
+      'Freshly boiled, still-hot potatoes tend to turn mushy — day-old or fully cooled works best.'
+    ],
+    spiceTip:'Caraway seeds are a traditional German addition — toss them in with the onions.'
+  },
+  {
+    id:'s1-2', tier:1, name:'Oven-Roasted Vegetables', desc:'Whatever\u2019s in season, caramelized in the oven.', xp:5,
+    tags:['vegetarian','side','family'], servings:2, prepTime:'10 min', cookTime:'27 min',
+    ingredients:[
+      ['Mixed vegetables (carrots, zucchini, bell pepper, red onion)','500','g'],['Olive oil','3','tbsp'],
+      ['Salt',null,'to taste'],['Pepper',null,'to taste'],['Dried herbs (thyme or oregano, optional)','1','tsp']
+    ],
+    steps:[
+      'Preheat the oven to 200°C.',
+      'Cut the vegetables into similar-sized pieces so they roast evenly.',
+      'Toss with olive oil, salt, pepper, and herbs on a baking tray, spreading them out in a single layer.',
+      'Roast for 25–30 minutes, turning once halfway, until edges are caramelized and vegetables are tender.'
+    ],
+    mistakes:[
+      'A crowded tray steams the vegetables instead of roasting them — use two trays if needed.',
+      'Uneven cutting means some pieces burn while others stay firm.',
+      'Too much oil makes them soggy rather than caramelized — a light, even coating is enough.'
+    ],
+    spiceTip:'Smoked paprika or a sprinkle of thyme before roasting adds real depth.'
+  },
+  {
+    id:'s1-3', tier:1, name:'Kartoffelpuffer (Potato Pancakes)', desc:'Grated potato, crisped in the pan.', xp:5,
+    tags:['vegetarian','side'], servings:2, prepTime:'15 min', cookTime:'15 min',
+    ingredients:[
+      ['Potatoes','500','g'],['Onion','1','small'],['Egg','1','pcs'],['Flour','2','tbsp'],
+      ['Salt',null,'to taste'],['Neutral oil, for frying','4','tbsp']
+    ],
+    steps:[
+      'Grate the potatoes and onion coarsely, then squeeze out as much liquid as possible with a clean kitchen towel.',
+      'Mix with the egg, flour, and salt until combined.',
+      'Heat the oil in a pan over medium-high heat. Scoop portions of the mixture in and flatten into rounds.',
+      'Fry for 3–4 minutes per side, until deeply golden and crisp at the edges.',
+      'Drain briefly on paper towel before serving.'
+    ],
+    mistakes:[
+      'Skipping the squeeze-dry step is the biggest cause of pancakes that fall apart or won\u2019t crisp.',
+      'Oil that isn\u2019t hot enough makes them greasy instead of crisp.',
+      'Flipping before a solid crust forms causes them to break in the pan.'
+    ],
+    spiceTip:'A pinch of nutmeg in the batter is traditional and subtle.'
+  },
+
+  {
+    id:'s1-4', tier:1, name:'Semmelknödel (German Bread Dumplings)', desc:'A good pairing for stews and roasts.', xp:5,
+    tags:['vegetarian','side','family'], servings:2, prepTime:'20 min (plus 15 min resting)', cookTime:'20 min',
+    ingredients:[
+      ['Stale bread rolls or baguette, cubed','300','g'],['Milk','250','ml'],['Onion','0.5','pcs'],
+      ['Butter','20','g'],['Eggs','2','pcs'],['Fresh parsley, chopped',null,'a small handful'],
+      ['Flour','2','tbsp'],['Salt',null,'to taste'],['Pepper',null,'to taste'],['Nutmeg','1','pinch']
+    ],
+    steps:[
+      'Cube the stale bread and place it in a large bowl. Warm the milk and pour it over the bread. Let it sit for 15 minutes until softened.',
+      'Meanwhile, sauté the diced onion in butter until soft.',
+      'Mix the onion, eggs, parsley, flour, salt, pepper, and nutmeg into the soaked bread until well combined.',
+      'Shape into 6 balls with wet hands.',
+      'Bring a large pot of salted water to a gentle simmer (not a hard boil). Add the dumplings and cook for 18–20 minutes, until they float and are cooked through.'
+    ],
+    mistakes:[
+      'A hard boil instead of a gentle simmer can break the dumplings apart — keep the water just barely bubbling.',
+      'Bread that isn\u2019t stale enough makes a gluey, dense dumpling instead of a light one.',
+      'Skipping the full soak time leaves dry pockets inside.'
+    ],
+    spiceTip:'A little marjoram alongside the parsley is a classic German touch.'
+  },
+  {
+    id:'s1-5', tier:1, name:'Air Fryer Roasted Vegetables', desc:'The oven version, but faster.', xp:5,
+    tags:['quick','vegetarian','side','family','airfryer'], servings:2, prepTime:'10 min', cookTime:'14 min',
+    ingredients:[
+      ['Mixed vegetables (carrots, zucchini, bell pepper, red onion)','500','g'],['Olive oil','2','tbsp'],
+      ['Salt',null,'to taste'],['Pepper',null,'to taste'],['Dried herbs (optional)','1','tsp']
+    ],
+    steps:[
+      'Cut the vegetables into similar-sized bite pieces.',
+      'Toss with olive oil, salt, pepper, and herbs.',
+      'Arrange in a single layer in the air fryer basket, working in batches if crowded.',
+      'Air fry at 200°C for 12–15 minutes, shaking the basket halfway, until tender and caramelized at the edges.'
+    ],
+    mistakes:[
+      'Overcrowding the basket steams rather than roasts — the air fryer needs space around each piece, so batch if needed.',
+      'Skipping the halfway shake leads to uneven browning.',
+      'Opening and checking too often lets heat escape and slows the whole thing down.'
+    ],
+    spiceTip:'Smoked paprika or a sprinkle of dried thyme before air frying adds depth.'
+  },
+  {
+    id:'s1-6', tier:1, name:'Herbed Couscous', desc:'A fast grain side, good with stir-fries and curries.', xp:5,
+    tags:['quick','vegetarian','side'], servings:2, prepTime:'5 min', cookTime:'10 min',
+    ingredients:[
+      ['Couscous','200','g'],['Vegetable stock, hot','250','ml'],['Olive oil','1','tbsp'],
+      ['Fresh parsley, chopped','2','tbsp'],['Lemon juice','1','tbsp'],['Salt',null,'to taste'],['Pepper',null,'to taste']
+    ],
+    steps:[
+      'Place the couscous in a heatproof bowl.',
+      'Pour the hot stock over it, cover, and let it sit for 5–8 minutes until all the liquid is absorbed.',
+      'Fluff with a fork, then stir in the olive oil, parsley, lemon juice, salt, and pepper.'
+    ],
+    mistakes:[
+      'Cold or lukewarm stock means the couscous won\u2019t fully hydrate.',
+      'Stirring instead of fluffing with a fork compacts it into clumps.',
+      'Leaving the bowl uncovered lets steam escape and leaves some grains dry.'
+    ],
+    spiceTip:'Ground cumin or a pinch of cinnamon, Moroccan-style, both work well here.'
+  },
+
+  // ---------- TIER 2 — Real Cooking (placeholders, expand later) ----------
+  {id:'t2-1', tier:2, name:'Vegetable & Bean Soup from Stock', desc:'Real stock, built from scratch.', xp:20, tags:['family','freezer','vegetarian']},
+  {id:'t2-2', tier:2, name:'Simple Risotto', desc:'Stir constantly, add stock slowly.', xp:20, tags:['vegetarian']},
+  {id:'t2-3', tier:2, name:'Braised Vegetable & Bean Stew', desc:'Low and slow, better the next day.', xp:20, tags:['family','freezer','vegetarian']},
+  {id:'t2-4', tier:2, name:'Homemade Pizza Dough & Pizza', desc:'Knead it, prove it, top it.', xp:20, tags:['family','vegetarian']},
+  {id:'t2-5', tier:2, name:'Chili (with beans, optional meat)', desc:'A pot that feeds you all week.', xp:20, tags:['family','freezer']},
+
+  // ---------- TIER 3 — Centerpiece (placeholders, expand later) ----------
+  {id:'t3-1', tier:3, name:'Whole Roast Chicken', desc:'The one that makes the house smell right.', xp:30, tags:['family']},
+  {id:'t3-2', tier:3, name:'Vegetable Lasagna from Scratch', desc:'Layers, patience, a big dish.', xp:30, tags:['family','freezer','vegetarian']},
+  {id:'t3-3', tier:3, name:'Sunday Roast with Yorkshire Puddings', desc:'The full production.', xp:30, tags:['family']},
+  {id:'t3-4', tier:3, name:'Homemade Bread', desc:'Flour, water, salt, yeast, time.', xp:30, tags:['vegetarian']},
+  {id:'t3-5', tier:3, name:'Thanksgiving-Style Turkey', desc:'The Sims reference, made real.', xp:30, tags:['family']},
+];
+SEED_RECIPES.forEach(r => { if(!r.tags.includes('side')) r.tags.push('main'); });
+
+const TIER_META = [
+  {n:0, name:'Fundamentals', unlockCount:0},
+  {n:1, name:'Building Blocks', unlockCount:3},
+  {n:2, name:'Real Cooking', unlockCount:3},
+  {n:3, name:'Centerpiece', unlockCount:3},
+];
+
+let state = { customRecipes: [], log: [], pinnedIds: [] };
+let selectedRating = 0;
+let previouslyUnlockedTiers = new Set([0]);
+let activeTab = 'tree';
+let activeFilters = new Set();
+
+const ALL_FILTER_TAGS = ['main','side','vegetarian','quick','family','freezer','airfryer'];
+
+function allRecipes(){ return SEED_RECIPES.concat(state.customRecipes); }
+function recipeById(id){ return allRecipes().find(r => r.id === id); }
+
+async function loadData(){
+  try{
+    const res = await window.storage.get(STORAGE_KEY, false);
+    if(res && res.value){
+      const parsed = JSON.parse(res.value);
+      state.customRecipes = parsed.customRecipes || [];
+      state.log = parsed.log || [];
+      state.pinnedIds = parsed.pinnedIds || [];
+      state.customRecipes.forEach(r => { if(!r.tags.includes('side') && !r.tags.includes('main')) r.tags.push('main'); });
+    }
+  }catch(e){ /* no existing data yet */ }
+}
+
+async function saveData(){
+  try{ await window.storage.set(STORAGE_KEY, JSON.stringify(state), false); }
+  catch(e){ console.error('Could not save progress', e); showToast('Couldn\u2019t save \u2014 try again in a moment'); }
+}
+
+function uniqueCookedIdsInTier(tierNum){
+  const ids = new Set();
+  state.log.forEach(entry => {
+    const r = recipeById(entry.recipeId);
+    if(r && r.tier === tierNum) ids.add(r.id);
+  });
+  return ids;
+}
+
+function isTierUnlocked(tierNum){
+  if(tierNum === 0) return true;
+  return uniqueCookedIdsInTier(tierNum - 1).size >= TIER_META[tierNum].unlockCount;
+}
+
+function totalXP(){ return state.log.reduce((sum, e) => sum + e.xpEarned, 0); }
+function currentLevel(){ return 1 + Math.floor(totalXP() / 60); }
+function xpProgressPct(){ const into = totalXP() % 60; return Math.min(100, Math.round((into / 60) * 100)); }
+
+function computeStreak(){
+  const dates = [...new Set(state.log.map(e => e.date))].sort().reverse();
+  if(dates.length === 0) return 0;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const msDay = 86400000;
+  const mostRecent = new Date(dates[0]);
+  if(Math.round((today - mostRecent) / msDay) > 1) return 0;
+  let streak = 1;
+  for(let i=0; i<dates.length-1; i++){
+    const diff = Math.round((new Date(dates[i]) - new Date(dates[i+1])) / msDay);
+    if(diff === 1) streak++;
+    else if(diff !== 0) break;
+  }
+  return streak;
+}
+
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+function logMeal(recipeId, date, rating, notes){
+  const recipe = recipeById(recipeId);
+  if(!recipe) return;
+  const alreadyCooked = state.log.some(e => e.recipeId === recipeId);
+  const xpEarned = alreadyCooked ? Math.max(2, Math.round(recipe.xp / 3)) : recipe.xp;
+  state.log.push({ recipeId, date, rating: rating || null, notes: notes || '', xpEarned, loggedAt: Date.now() });
+  saveData();
+  showToast(alreadyCooked
+    ? `Logged \u201c${recipe.name}\u201d again \u2014 +${xpEarned} XP`
+    : `First time cooking \u201c${recipe.name}\u201d \u2014 +${xpEarned} XP`);
+  render();
+}
+
+function tagClass(tag){
+  return {quick:'tag-quick', family:'tag-family', freezer:'tag-freezer', vegetarian:'tag-vegetarian', side:'tag-side', main:'tag-main', airfryer:'tag-airfryer'}[tag] || '';
+}
+function tagLabel(tag){
+  if(tag === 'freezer') return 'freezer-friendly';
+  if(tag === 'airfryer') return 'air fryer';
+  return tag;
+}
+
+function togglePin(id){
+  const idx = state.pinnedIds.indexOf(id);
+  if(idx > -1){
+    state.pinnedIds.splice(idx, 1);
+  } else {
+    if(state.pinnedIds.length >= 3){
+      showToast('Unpin something first \u2014 max 3 at a time');
+      return;
+    }
+    state.pinnedIds.push(id);
+  }
+  saveData();
+  render();
+}
+
+function renderStatus(){
+  document.getElementById('levelLabel').textContent = `Level ${currentLevel()}`;
+  document.getElementById('xpValue').textContent = `${totalXP()} XP`;
+  document.getElementById('xpBarFill').style.width = xpProgressPct() + '%';
+  const streak = computeStreak();
+  const streakEl = document.getElementById('streakValue');
+  if(streak >= 2) streakEl.innerHTML = `${streak}-day streak &#128293;`;
+  else if(streak === 1) streakEl.textContent = 'day one \u2014 keep going';
+  else streakEl.textContent = 'no streak yet';
+}
+
+function renderFilterBar(){
+  const bar = document.createElement('div');
+  bar.className = 'filter-bar';
+  ALL_FILTER_TAGS.forEach(tag => {
+    const chip = document.createElement('button');
+    chip.className = 'filter-chip' + (activeFilters.has(tag) ? ' active' : '');
+    chip.textContent = tagLabel(tag);
+    chip.addEventListener('click', () => {
+      if(activeFilters.has(tag)) activeFilters.delete(tag); else activeFilters.add(tag);
+      renderTree();
+    });
+    bar.appendChild(chip);
+  });
+  if(activeFilters.size > 0){
+    const clear = document.createElement('button');
+    clear.className = 'filter-clear';
+    clear.textContent = 'Clear filters';
+    clear.addEventListener('click', () => { activeFilters.clear(); renderTree(); });
+    bar.appendChild(clear);
+  }
+  return bar;
+}
+
+function buildRecipeCard(r, unlocked, cooked){
+  const card = document.createElement('div');
+  card.className = 'recipe-card' + (unlocked ? '' : ' locked');
+  const tagsHtml = r.tags.map(t => `<span class="chip ${tagClass(t)}">${tagLabel(t)}</span>`).join('');
+  const isPinned = state.pinnedIds.includes(r.id);
+  card.innerHTML = `
+    <h3>${r.name}</h3>
+    <p class="desc">${r.desc}</p>
+    <div class="chip-row">${tagsHtml}</div>
+    <div class="card-foot">
+      <span class="xp-tag">${r.xp} XP</span>
+      ${unlocked ? `<button class="pin-btn ${isPinned ? 'pinned' : ''}" data-pin="${r.id}">${isPinned ? '\u{1F4CC} Pinned' : '\u{1F4CC} Pin'}</button>` : ''}
+      ${unlocked
+        ? `<button class="cook-btn ${cooked ? 'done' : ''}" data-recipe="${r.id}">${cooked ? 'Cook again' : 'I cooked this'}</button>`
+        : `<span class="lock-note">&#128274; locked</span>`}
+    </div>
+  `;
+  if(unlocked){
+    card.addEventListener('click', (e) => {
+      if(e.target.closest('.cook-btn') || e.target.closest('.pin-btn')) return;
+      openRecipeDetail(r.id);
+    });
+  }
+  return card;
+}
+
+function renderTree(){
+  const container = document.getElementById('view-tree');
+  container.innerHTML = '';
+  container.appendChild(renderFilterBar());
+
+  let anyTierShown = false;
+
+  TIER_META.forEach(meta => {
+    const unlocked = isTierUnlocked(meta.n);
+    const allTierRecipes = allRecipes().filter(r => r.tier === meta.n)
+      .sort((a, b) => (a.tags.includes('side') ? 1 : 0) - (b.tags.includes('side') ? 1 : 0));
+    const recipes = activeFilters.size === 0
+      ? allTierRecipes
+      : allTierRecipes.filter(r => [...activeFilters].every(tag => r.tags.includes(tag)));
+    const cookedIds = uniqueCookedIdsInTier(meta.n);
+    const hasDetails = allTierRecipes.some(r => r.steps);
+
+    if(activeFilters.size > 0 && recipes.length === 0) return;
+    anyTierShown = true;
+
+    const tierDiv = document.createElement('div');
+    tierDiv.className = 'tier';
+    if(unlocked && !previouslyUnlockedTiers.has(meta.n)){
+      tierDiv.classList.add('just-unlocked');
+      previouslyUnlockedTiers.add(meta.n);
+    }
+
+    const head = document.createElement('div');
+    head.className = 'tier-head';
+    head.innerHTML = `<h2><span class="tier-num">Tier ${meta.n}</span> &mdash; ${meta.name}</h2>`;
+    tierDiv.appendChild(head);
+
+    if(!unlocked){
+      const need = TIER_META[meta.n].unlockCount;
+      const have = uniqueCookedIdsInTier(meta.n - 1).size;
+      const note = document.createElement('p');
+      note.className = 'tier-lock-note';
+      note.textContent = `Unlocks after cooking ${need} different Tier ${meta.n - 1} dishes (${have}/${need} so far).`;
+      tierDiv.appendChild(note);
+    } else if(!hasDetails){
+      const note = document.createElement('p');
+      note.className = 'tier-horizon-note';
+      note.textContent = 'On the horizon \u2014 full recipes for this tier are still being written.';
+      tierDiv.appendChild(note);
+    }
+
+    const grid = document.createElement('div');
+    grid.className = 'card-grid';
+
+    recipes.forEach(r => {
+      grid.appendChild(buildRecipeCard(r, unlocked, cookedIds.has(r.id)));
+    });
+
+    tierDiv.appendChild(grid);
+    container.appendChild(tierDiv);
+  });
+
+  if(!anyTierShown){
+    const note = document.createElement('p');
+    note.className = 'filter-empty-note';
+    note.textContent = 'Nothing matches that combination of filters.';
+    container.appendChild(note);
+  }
+
+  container.querySelectorAll('.cook-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+
+      logMeal(btn.dataset.recipe, todayStr(), null, '');
+    });
+  });
+  container.querySelectorAll('.pin-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      togglePin(btn.dataset.pin);
+    });
+  });
+}
+
+function renderLogView(){
+  const select = document.getElementById('logRecipe');
+  select.innerHTML = '';
+  TIER_META.forEach(meta => {
+    if(!isTierUnlocked(meta.n)) return;
+    const group = document.createElement('optgroup');
+    group.label = `Tier ${meta.n} \u2014 ${meta.name}`;
+    allRecipes().filter(r => r.tier === meta.n).forEach(r => {
+      const opt = document.createElement('option');
+      opt.value = r.id; opt.textContent = r.name;
+      group.appendChild(opt);
+    });
+    select.appendChild(group);
+  });
+  document.getElementById('logDate').value = todayStr();
+
+  const historyList = document.getElementById('logHistoryList');
+  historyList.innerHTML = '';
+  if(state.log.length === 0){
+    historyList.innerHTML = '<p class="empty-note">Nothing logged yet \u2014 cook something and add it here.</p>';
+    return;
+  }
+  [...state.log].sort((a,b) => b.loggedAt - a.loggedAt).forEach(entry => {
+    const r = recipeById(entry.recipeId);
+    if(!r) return;
+    const row = document.createElement('div');
+    row.className = 'log-entry';
+    const stars = entry.rating ? '&#9733;'.repeat(entry.rating) : '';
+    row.innerHTML = `<span class="le-name">${r.name}${stars ? ' &mdash; ' + stars : ''}</span><span class="le-date">${entry.date}</span>`;
+    historyList.appendChild(row);
+  });
+}
+
+const BADGE_DEFS = [
+  {id:'first', name:'First Bite', desc:'Log your first meal.', test: () => state.log.length >= 1},
+  {id:'tier1', name:'Building Blocks Unlocked', desc:'Unlock Tier 1.', test: () => isTierUnlocked(1)},
+  {id:'tier2', name:'Real Cooking Unlocked', desc:'Unlock Tier 2.', test: () => isTierUnlocked(2)},
+  {id:'tier3', name:'Centerpiece Unlocked', desc:'Unlock Tier 3.', test: () => isTierUnlocked(3)},
+  {id:'streak3', name:'3-Day Streak', desc:'Cook three days in a row.', test: () => computeStreak() >= 3},
+  {id:'streak7', name:'7-Day Streak', desc:'Cook seven days in a row.', test: () => computeStreak() >= 7},
+  {id:'ten', name:'10 Meals Cooked', desc:'Log ten meals total.', test: () => state.log.length >= 10},
+  {id:'twentyfive', name:'25 Meals Cooked', desc:'Log twenty-five meals total.', test: () => state.log.length >= 25},
+  {id:'freezer', name:'Freezer Stockpiler', desc:'Cook three freezer-friendly dishes.', test: () => {
+    const ids = new Set(state.log.map(e => e.recipeId));
+    return [...ids].filter(id => recipeById(id) && recipeById(id).tags.includes('freezer')).length >= 3;
+  }},
+  {id:'family', name:'Family Table', desc:'Cook three family-friendly dishes.', test: () => {
+    const ids = new Set(state.log.map(e => e.recipeId));
+    return [...ids].filter(id => recipeById(id) && recipeById(id).tags.includes('family')).length >= 3;
+  }},
+  {id:'turkey', name:'Turkey Day', desc:'Cook the Thanksgiving-style turkey.', test: () => state.log.some(e => e.recipeId === 't3-5')},
+];
+
+function renderBadges(){
+  const grid = document.getElementById('badgeGrid');
+  grid.innerHTML = '';
+  BADGE_DEFS.forEach(b => {
+    const earned = b.test();
+    const card = document.createElement('div');
+    card.className = 'badge-card' + (earned ? ' earned' : '');
+    card.innerHTML = `<h3>${earned ? '&#10003; ' : ''}${b.name}</h3><p>${b.desc}</p>`;
+    grid.appendChild(card);
+  });
+}
+
+function switchTab(view){
+  activeTab = view;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + view).classList.add('active');
+  document.getElementById('mainTabs').style.display = 'flex';
+}
+
+function renderSideSuggestion(r){
+  const validSideIds = (r.sideIds || []).filter(id => recipeById(id) && isTierUnlocked(recipeById(id).tier));
+  if(validSideIds.length === 0 && !r.side) return '';
+  const pillsHtml = validSideIds.length
+    ? `<div class="side-link-row">${validSideIds.map(id => `<button class="side-link" data-recipe="${id}">${recipeById(id).name}</button>`).join('')}</div>`
+    : '';
+  const noteHtml = r.side ? `<p class="side-note">${r.side}</p>` : '';
+  return `<div class="side-suggestion"><strong>Serve it with</strong>${pillsHtml}${noteHtml}</div>`;
+}
+
+function buildRecipeBodyHtml(r){
+  if(r.steps && r.ingredients){
+    const ingredientsHtml = r.ingredients.map(([name, amt, unit]) => {
+      const amountText = amt ? `${amt}${unit && unit.length <= 3 ? ' ' + unit : ''}` : (unit || '');
+      const nameText = (unit && unit.length > 3 && amt) ? `${name} (${unit})` : name;
+      return `<li><span>${nameText}</span><span class="ingredient-amt">${amountText}</span></li>`;
+    }).join('');
+    const stepsHtml = r.steps.map(s => `<li>${s}</li>`).join('');
+    const mistakesHtml = (r.mistakes && r.mistakes.length)
+      ? `<div class="mistakes-box"><strong>Watch out for</strong><ul>${r.mistakes.map(m => `<li>${m}</li>`).join('')}</ul></div>`
+      : '';
+    const spiceTipHtml = r.spiceTip
+      ? `<div class="spice-tip-box"><strong>Flavor idea</strong><p>${r.spiceTip}</p></div>`
+      : '';
+    return `
+      <div class="detail-grid">
+        <div class="detail-box">
+          <h3>Ingredients</h3>
+          <ul class="ingredient-list">${ingredientsHtml}</ul>
+        </div>
+        <div class="detail-box">
+          <h3>Steps</h3>
+          <ol class="step-list">${stepsHtml}</ol>
+        </div>
+      </div>
+      ${mistakesHtml}
+      ${spiceTipHtml}
+      ${renderSideSuggestion(r)}
+    `;
+  }
+  return `<div class="placeholder-note">This tier is still a way off \u2014 the full recipe for this one hasn\u2019t been written yet. It\u2019ll be here by the time you unlock it.</div>`;
+}
+
+function buildRecipeMetaHtml(r){
+  const tagsHtml = r.tags.map(t => `<span class="chip ${tagClass(t)}">${tagLabel(t)}</span>`).join('');
+  const metaBits = [];
+  if(r.servings) metaBits.push(`Serves ${r.servings}`);
+  if(r.prepTime) metaBits.push(`Prep ${r.prepTime}`);
+  if(r.cookTime) metaBits.push(`Cook ${r.cookTime}`);
+  const metaHtml = metaBits.join(' <span class="dot">&middot;</span> ');
+  return { tagsHtml, metaHtml };
+}
+
+function openRecipeDetail(id){
+  const r = recipeById(id);
+  if(!r) return;
+  const container = document.getElementById('view-detail');
+  const cooked = state.log.some(e => e.recipeId === id);
+  const isPinned = state.pinnedIds.includes(id);
+
+  const { tagsHtml, metaHtml } = buildRecipeMetaHtml(r);
+  const bodyHtml = buildRecipeBodyHtml(r);
+
+  container.innerHTML = `
+    <button class="back-link" id="detailBackBtn">&larr; Back to Skill Tree</button>
+    <div class="detail-head">
+      <h2>${r.name}</h2>
+      ${metaHtml ? `<div class="detail-meta">${metaHtml}</div>` : ''}
+      <p class="detail-desc">${r.desc}</p>
+      <div class="chip-row">${tagsHtml}</div>
+    </div>
+    ${bodyHtml}
+    <div style="display:flex; gap:10px; margin-top:20px;">
+      <button class="primary-btn" id="detailCookBtn">${cooked ? 'Cook again' : 'I cooked this'}</button>
+      <button class="pin-btn ${isPinned ? 'pinned' : ''}" id="detailPinBtn">${isPinned ? '\u{1F4CC} Pinned' : '\u{1F4CC} Pin'}</button>
+    </div>
+  `;
+
+  document.getElementById('detailBackBtn').addEventListener('click', () => {
+    document.getElementById('mainTabs').style.display = 'flex';
+    switchTab('tree');
+  });
+  document.getElementById('detailCookBtn').addEventListener('click', () => {
+    logMeal(id, todayStr(), null, '');
+    openRecipeDetail(id);
+  });
+  document.getElementById('detailPinBtn').addEventListener('click', () => {
+    togglePin(id);
+    openRecipeDetail(id);
+  });
+  container.querySelectorAll('.side-link').forEach(btn => {
+    btn.addEventListener('click', () => openRecipeDetail(btn.dataset.recipe));
+  });
+
+  document.getElementById('mainTabs').style.display = 'none';
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  container.classList.add('active');
+}
+
+function renderPinned(){
+  const container = document.getElementById('view-pinned');
+  container.innerHTML = '';
+
+  if(state.pinnedIds.length === 0){
+    container.innerHTML = '<p class="empty-note">Nothing pinned yet \u2014 pin a main and a couple of sides before you start cooking, and they\u2019ll all sit here together while you work.</p>';
+    return;
+  }
+
+  state.pinnedIds.forEach(id => {
+    const r = recipeById(id);
+    if(!r) return;
+    const cooked = state.log.some(e => e.recipeId === id);
+    const { tagsHtml, metaHtml } = buildRecipeMetaHtml(r);
+    const bodyHtml = buildRecipeBodyHtml(r);
+
+    const block = document.createElement('div');
+    block.style.marginBottom = '30px';
+    block.innerHTML = `
+      <div class="detail-head">
+        <h2>${r.name}</h2>
+        ${metaHtml ? `<div class="detail-meta">${metaHtml}</div>` : ''}
+        <div class="chip-row">${tagsHtml}</div>
+      </div>
+      ${bodyHtml}
+      <div style="display:flex; gap:10px; margin-top:20px;">
+        <button class="primary-btn" data-cook="${id}">${cooked ? 'Cook again' : 'I cooked this'}</button>
+        <button class="pin-btn pinned" data-unpin="${id}">\u{1F4CC} Unpin</button>
+      </div>
+    `;
+    container.appendChild(block);
+  });
+
+  container.querySelectorAll('[data-cook]').forEach(btn => {
+    btn.addEventListener('click', () => logMeal(btn.dataset.cook, todayStr(), null, ''));
+  });
+  container.querySelectorAll('[data-unpin]').forEach(btn => {
+    btn.addEventListener('click', () => togglePin(btn.dataset.unpin));
+  });
+  container.querySelectorAll('.side-link').forEach(btn => {
+    btn.addEventListener('click', () => {
+      switchTab('tree');
+      openRecipeDetail(btn.dataset.recipe);
+    });
+  });
+}
+
+function render(){
+  renderStatus();
+  renderTabLabels();
+  renderTree();
+  renderPinned();
+  renderLogView();
+  renderBadges();
+}
+
+function renderTabLabels(){
+  const pinnedTab = document.querySelector('.tab-btn[data-view="pinned"]');
+  pinnedTab.textContent = state.pinnedIds.length > 0 ? `Pinned (${state.pinnedIds.length})` : 'Pinned';
+}
+
+function setupTabs(){
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.view));
+  });
+}
+
+function setupLogForm(){
+  document.querySelectorAll('.rating-star').forEach(star => {
+    star.addEventListener('click', () => {
+      selectedRating = parseInt(star.dataset.val);
+      document.querySelectorAll('.rating-star').forEach(s => s.classList.toggle('on', parseInt(s.dataset.val) <= selectedRating));
+    });
+  });
+  document.getElementById('logSubmit').addEventListener('click', () => {
+    const recipeId = document.getElementById('logRecipe').value;
+    const date = document.getElementById('logDate').value || todayStr();
+    const notes = document.getElementById('logNotes').value;
+    if(!recipeId) return;
+    logMeal(recipeId, date, selectedRating, notes);
+    document.getElementById('logNotes').value = '';
+    selectedRating = 0;
+    document.querySelectorAll('.rating-star').forEach(s => s.classList.remove('on'));
+  });
+}
+
+async function init(){
+  await loadData();
+  TIER_META.forEach(m => { if(isTierUnlocked(m.n)) previouslyUnlockedTiers.add(m.n); });
+  setupTabs();
+  setupLogForm();
+  render();
+}
+
+init();
+</script>
+</body>
+</html>
