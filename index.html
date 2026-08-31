@@ -249,6 +249,18 @@ textarea{resize:vertical; min-height:60px;}
 
 .log-history{margin-top:26px;}
 .log-history h2{font-family:var(--font-display); font-size:18px; font-weight:700; margin:0 0 12px; color:var(--panel-teal-dark);}
+
+.data-section{margin-top:30px; padding-top:20px; border-top:2px solid var(--paper);}
+.data-section h2{font-family:var(--font-display); font-size:18px; font-weight:700; margin:0 0 8px; color:var(--panel-teal-dark);}
+.data-section p{margin:0 0 14px; font-size:13.5px; color:var(--ink-soft); line-height:1.5;}
+.backup-actions{display:flex; flex-wrap:wrap; gap:10px;}
+.restore-label{
+  display:inline-flex; align-items:center; cursor:pointer; padding:10px 14px; font-size:13.5px;
+}
+.restore-label input[type=file]{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden;
+  clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}
 .log-entry{display:flex; justify-content:space-between; gap:10px; padding:10px 0; border-bottom:1px solid var(--line); font-size:13.5px;}
 .log-entry .le-name{font-weight:600;}
 .log-entry .le-date{color:var(--ink-soft); white-space:nowrap;}
@@ -431,6 +443,18 @@ textarea{resize:vertical; min-height:60px;}
     <div class="log-history">
       <h2>History</h2>
       <div id="logHistoryList"></div>
+    </div>
+
+    <div class="data-section">
+      <h2>Backup &amp; Restore</h2>
+      <p>Your progress lives only on this device. Download a backup before switching or wiping your phone, then restore it afterward to pick up right where you left off.</p>
+      <div class="backup-actions">
+        <button class="primary-btn" id="backupBtn">Download Backup</button>
+        <label class="pin-btn restore-label">
+          Restore Backup
+          <input type="file" accept="application/json" id="restoreInput">
+        </label>
+      </div>
     </div>
   </div>
 
@@ -1829,11 +1853,68 @@ function setupLogForm(){
   });
 }
 
+function downloadBackup(){
+  try{
+    const data = JSON.stringify(state, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `sim-kitchen-backup-${todayStr()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('Backup downloaded');
+  }catch(e){
+    showToast('Couldn\u2019t create the backup file');
+  }
+}
+
+function restoreBackup(file){
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    let parsed;
+    try{
+      parsed = JSON.parse(e.target.result);
+    }catch(err){
+      showToast('That file isn\u2019t valid \u2014 couldn\u2019t read it');
+      return;
+    }
+    if(!parsed || typeof parsed !== 'object' || !Array.isArray(parsed.log)){
+      showToast('That doesn\u2019t look like a Sim Kitchen backup file');
+      return;
+    }
+    const proceed = confirm('This replaces your current progress with the backup. This can\u2019t be undone \u2014 continue?');
+    if(!proceed) return;
+    state.customRecipes = parsed.customRecipes || [];
+    state.log = parsed.log || [];
+    state.pinnedIds = parsed.pinnedIds || [];
+    state.customRecipes.forEach(r => { if(!r.tags.includes('side') && !r.tags.includes('main')) r.tags.push('main'); });
+    saveData();
+    previouslyUnlockedTiers = new Set([0]);
+    TIER_META.forEach(m => { if(isTierUnlocked(m.n)) previouslyUnlockedTiers.add(m.n); });
+    render();
+    showToast('Backup restored');
+  };
+  reader.readAsText(file);
+}
+
+function setupBackup(){
+  document.getElementById('backupBtn').addEventListener('click', downloadBackup);
+  document.getElementById('restoreInput').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if(file) restoreBackup(file);
+    e.target.value = '';
+  });
+}
+
 async function init(){
   await loadData();
   TIER_META.forEach(m => { if(isTierUnlocked(m.n)) previouslyUnlockedTiers.add(m.n); });
   setupTabs();
   setupLogForm();
+  setupBackup();
   render();
 }
 
