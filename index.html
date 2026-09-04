@@ -193,6 +193,40 @@ body{
 .chip.tag-main{background:#DCE6EE;}
 .chip.tag-airfryer{background:#D9E9F2; border:1px solid #A8C7DB;}
 
+.tier-tabs{
+  display:flex; gap:6px; margin-bottom:16px; padding:4px;
+  background:var(--paper); border-radius:8px;
+  box-shadow: inset 1px 1px 3px rgba(0,0,0,0.12);
+}
+.tier-tab-btn{
+  flex:1; font-family:var(--font-display); font-weight:700; font-size:12.5px; color:var(--ink-soft);
+  background:var(--card); border:none; border-radius:6px; padding:8px 6px; cursor:pointer;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.5), inset -1px -1px 0 rgba(0,0,0,0.08);
+}
+.tier-tab-btn:hover{color:var(--ink);}
+.tier-tab-btn.active{
+  background:var(--panel-teal); color:#FFFFFF;
+  box-shadow: inset 2px 2px 4px rgba(0,0,0,0.3), inset -1px -1px 0 rgba(255,255,255,0.15);
+}
+
+.search-bar-wrap{margin-bottom:14px;}
+.search-input{width:100%; font-size:15px; padding:11px 14px;}
+
+.subsection-label{
+  display:flex; align-items:center; gap:7px;
+  font-family:var(--font-display); font-weight:700; font-size:13px;
+  margin:14px 0 8px;
+}
+.subsection-label::before{
+  content:''; width:8px; height:8px; flex-shrink:0;
+  transform:rotate(45deg); border-radius:2px;
+  box-shadow: inset -1px -1px 0 rgba(0,0,0,0.25), inset 1px 1px 0 rgba(255,255,255,0.4);
+}
+.subsection-label.subsection-mains{color:var(--panel-teal);}
+.subsection-label.subsection-mains::before{background:var(--panel-teal);}
+.subsection-label.subsection-sides{color:var(--mustard);}
+.subsection-label.subsection-sides::before{background:var(--mustard);}
+
 .filter-bar{display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-bottom:22px;}
 .filter-chip{
   font-family:var(--font-body); font-weight:600; font-size:13px; color:var(--ink-soft);
@@ -595,7 +629,7 @@ const SEED_RECIPES = [
       'Cold milk and butter straight from the fridge can make mash gluey — warm them slightly first.'
     ],
     spiceTip:'Nutmeg in the mash and a little thyme on the sausages both work well.',
-    side:'Fried onions or a spoon of peas round this out well — no recipe needed for either.'
+    side:'Fried onions or a spoon of peas round this out well — no recipe needed for either. Store-bought Rotkohl (braised red cabbage) is a classic German pairing too.'
   },
 
   {
@@ -680,6 +714,97 @@ const SEED_RECIPES = [
       'Skipping the pepper at the end is a small thing that actually makes a real difference.'
     ],
     spiceTip:'A pinch of smoked paprika or a dash of hot sauce livens these up a lot.'
+  },
+
+  {
+    id:'t0-11', tier:0, name:'Tofu Scramble', desc:'The plant-based answer to scrambled eggs.', xp:10,
+    tags:['quick','vegetarian','family'], servings:2, prepTime:'5 min', cookTime:'8 min',
+    ingredients:[
+      ['Firm tofu','350','g'],['Turmeric','0.5','tsp'],['Garlic powder','0.5','tsp'],
+      ['Onion powder','0.5','tsp'],['Nutritional yeast (optional)','2','tbsp'],
+      ['Olive oil','1.5','tbsp'],['Mixed vegetables (bell pepper, spinach), optional','100','g'],
+      ['Salt',null,'to taste'],['Pepper',null,'to taste']
+    ],
+    steps:[
+      'Drain the tofu and crumble it into bite-sized pieces with your hands or a fork \u2014 it should look like coarse scrambled eggs.',
+      'Heat the oil in a pan over medium heat. If using vegetables, sauté them for 2–3 minutes first, then push to the side.',
+      'Add the crumbled tofu to the pan and sprinkle with turmeric, garlic powder, onion powder, and salt.',
+      'Cook, stirring occasionally, for 6–8 minutes, until heated through and lightly golden in spots.',
+      'Stir in the nutritional yeast if using, season with pepper, and serve.'
+    ],
+    mistakes:[
+      'Crumbling the tofu too finely turns it mushy rather than scramble-like \u2014 aim for uneven, bite-sized curds.',
+      'Skipping the turmeric is the easiest way to end up with a pale scramble \u2014 it\u2019s what gives the classic yellow color.',
+      'Skipping the drain leaves extra water in the pan, so it steams instead of lightly browning.'
+    ],
+    spiceTip:'Smoked paprika or a pinch of cayenne stirred in with the turmeric adds real depth.',
+    sideIds:['s0-3'], side:null
+  },
+
+  {
+    id:'t0-12', tier:0, name:'Breakfast Burrito', desc:'Eggs, cheese, whatever\u2019s in the fridge, wrapped up.', xp:10,
+    tags:['quick','vegetarian','family'], servings:2, prepTime:'8 min', cookTime:'8 min',
+    ingredients:[
+      ['Eggs','4','pcs'],['Large tortillas','2','pcs'],['Cheese, grated','100','g'],
+      ['Black beans (tinned, optional)','150','g'],['Bell pepper, diced','0.5','pcs'],
+      ['Onion, diced','0.25','pcs'],['Oil','1','tbsp'],['Salt',null,'to taste'],['Pepper',null,'to taste']
+    ],
+    steps:[
+      'Sauté the diced pepper and onion in oil until softened, about 4 minutes.',
+      'Whisk the eggs with salt and pepper, pour into the pan, and scramble gently until just set.',
+      'Warm the tortillas briefly in a dry pan or the microwave so they\u2019re pliable.',
+      'Divide the scrambled eggs, cheese, and black beans (if using) between the tortillas.',
+      'Fold in the sides and roll tightly into a burrito. Return seam-side down to the pan for a minute to seal, if you like.'
+    ],
+    mistakes:[
+      'Overfilling makes it impossible to roll tightly, and it falls apart when you bite in.',
+      'Skipping the tortilla warm-up step makes it crack instead of folding cleanly.',
+      'Scrambling the eggs too far ahead means they\u2019re cold by assembly time \u2014 make them last.'
+    ],
+    spiceTip:'A spoonful of salsa or a dash of hot sauce rolled in with the filling wakes the whole thing up.'
+  },
+  {
+    id:'t0-13', tier:0, name:'Loaded Baked Potato', desc:'Very low effort for how satisfying it is.', xp:10,
+    tags:['vegetarian','family'], servings:2, prepTime:'5 min', cookTime:'50 min',
+    ingredients:[
+      ['Large baking potatoes','2','pcs'],['Olive oil','1','tbsp'],['Coarse salt',null,'for the skin'],
+      ['Butter','20','g'],['Cheese, grated','60','g'],['Sour cream','60','g'],
+      ['Chives or spring onion, chopped',null,'to taste'],['Black pepper',null,'to taste']
+    ],
+    steps:[
+      'Preheat the oven to 220°C. Prick the potatoes a few times with a fork, rub with olive oil, and sprinkle generously with coarse salt.',
+      'Bake directly on the oven rack for 45–55 minutes, until the skin is crisp and a knife slides easily into the center. Short on time? Microwave for 5–6 minutes first, then finish in the hot oven for 15 minutes for a crisp skin.',
+      'Slice each potato open lengthwise and fluff the inside with a fork.',
+      'Top with butter, cheese, sour cream, and chives.'
+    ],
+    mistakes:[
+      'Skipping the fork pricks risks the potato genuinely bursting in the oven from trapped steam.',
+      'Wrapping it in foil traps steam and gives you a soft skin instead of a crisp one \u2014 bake it directly on the rack.',
+      'Piling cold toppings on immediately cools the inside fast \u2014 fluff it with a fork first to keep it hot longer.'
+    ],
+    spiceTip:'Smoked paprika or a few dashes of hot sauce mixed into the sour cream makes a nice topping upgrade.',
+    sideIds:['s0-7'], side:'Black beans or leftover chili make a great protein-boosting topping too.'
+  },
+  {
+    id:'t0-14', tier:0, name:'Quick Pesto Pasta', desc:'Same idea as the buttered pasta, different flavor family.', xp:10,
+    tags:['quick','vegetarian','family'], servings:2, prepTime:'5 min', cookTime:'12 min',
+    ingredients:[
+      ['Pasta','250','g'],['Pesto (store-bought or homemade)','100','g'],['Parmesan, grated','30','g'],
+      ['Cherry tomatoes, halved (optional)','150','g'],['Salt',null,'to taste'],['Pepper',null,'to taste']
+    ],
+    steps:[
+      'Bring a large pot of salted water to a boil and cook the pasta according to the package.',
+      'Reserve a cup of pasta water, then drain.',
+      'Toss the hot pasta with the pesto and a splash of pasta water until glossy and evenly coated.',
+      'Stir in the parmesan and cherry tomatoes if using. Season to taste.'
+    ],
+    mistakes:[
+      'Adding cold pesto with no pasta water to loosen it can make the sauce look separated and clumpy instead of glossy.',
+      'Too little pasta water leaves the sauce clumped rather than silky.',
+      'Overcooking the pasta past al dente means it can\u2019t hold the sauce as well.'
+    ],
+    spiceTip:'A pinch of chili flakes on top adds a nice contrast to the basil.',
+    sideIds:['t0-4'], side:null
   },
 
   // ---------- TIER 1 — Building Blocks ----------
@@ -869,7 +994,7 @@ const SEED_RECIPES = [
       'Salting too early alongside the tomatoes can slow the chickpeas softening further — season toward the end instead.'
     ],
     spiceTip:'Garam masala stirred in right at the end, rather than cooked the whole time, adds a lot of fragrance.',
-    sideIds:['s0-1'], side:'Prefer the slow cooker? Sauté the onion, garlic, and spices first, then transfer everything to the slow cooker and cook on low for 4–5 hours instead of simmering on the stove.'
+    sideIds:['s0-1','s0-12'], side:'Prefer the slow cooker? Sauté the onion, garlic, and spices first, then transfer everything to the slow cooker and cook on low for 4–5 hours instead of simmering on the stove.'
   },
   {
     id:'t1-9', tier:1, name:'Frittata', desc:'Oven-baked eggs, more forgiving than an omelet.', xp:15,
@@ -966,7 +1091,7 @@ const SEED_RECIPES = [
       'Skipping the oil spray in the air fryer gives a dry, pale result instead of golden and crisp.'
     ],
     spiceTip:'A pinch of cayenne in the mix adds background heat without overpowering the herbs.',
-    sideIds:['s0-6'], side:'Great tucked into pita with the hummus and veggie plate, or served over salad.'
+    sideIds:['s0-6','s0-12'], side:'Great tucked into pita with the hummus and veggie plate, or served over salad.'
   },
   {
     id:'t1-13', tier:1, name:'Vegetable Fried Rice with Egg', desc:'A step up in technique from the Tier 0 version.', xp:15,
@@ -1012,6 +1137,208 @@ const SEED_RECIPES = [
     ],
     spiceTip:'A pinch of cayenne in the sauce for those who like more heat.',
     sideIds:['s1-1'], side:'Traditionally served with fries (Pommes) on the side.'
+  },
+
+  {
+    id:'t1-15', tier:1, name:'Chickpea & Spinach Stew (Espinacas con Garbanzos)', desc:'Spanish-style stew, built from a can of chickpeas.', xp:15,
+    tags:['vegetarian','freezer','family'], servings:4, prepTime:'10 min', cookTime:'25 min',
+    ingredients:[
+      ['Chickpeas (tinned)','800','g'],['Fresh spinach','250','g'],['Onion','1','pcs'],
+      ['Garlic','4','cloves'],['Crushed tomatoes (tinned)','200','g'],['Ground cumin','1','tsp'],
+      ['Smoked paprika','1','tsp'],['Olive oil','3','tbsp'],['A slice of bread','1','pcs'],
+      ['Sherry vinegar (or red wine vinegar)','1','tbsp'],['Vegetable stock','200','ml'],
+      ['Salt',null,'to taste'],['Pepper',null,'to taste']
+    ],
+    steps:[
+      'Heat 1 tbsp of the oil in a pan and fry the slice of bread until golden on both sides. Remove and set aside.',
+      'In the same pan, add the remaining oil and sauté the diced onion until soft, about 6 minutes.',
+      'Add two of the garlic cloves and cook for 1 minute, then stir in the cumin and smoked paprika.',
+      'Add the tomatoes and stock, and simmer for 5 minutes.',
+      'Meanwhile, blend or mash the fried bread with the remaining garlic cloves and a splash of water into a rough paste.',
+      'Add the drained chickpeas to the pan and simmer for 10 minutes.',
+      'Stir in the bread-and-garlic paste to thicken the stew, then add the spinach in a couple of batches, letting each wilt before adding more.',
+      'Finish with the vinegar, and season with salt and pepper.'
+    ],
+    mistakes:[
+      'Skipping the bread-and-garlic paste (a classic Spanish technique called a majado) leaves the stew thinner and less rounded in flavor.',
+      'Adding all the spinach at once makes it hard to stir in \u2014 add it in batches instead.',
+      'Forgetting the splash of vinegar at the end skips the little lift that balances the smokiness.'
+    ],
+    spiceTip:'A pinch of cayenne or a small dried chili with the onions adds gentle heat, if you like it spicier.',
+    sideIds:['s0-3'], side:null
+  },
+
+  {
+    id:'t1-16', tier:1, name:'Black Bean Burgers', desc:'A patty that actually holds together, built from a can of black beans.', xp:15,
+    tags:['vegetarian','family'], servings:2, prepTime:'15 min (plus 15 min chill, optional)', cookTime:'12 min',
+    ingredients:[
+      ['Black beans (tinned)','400','g'],['Breadcrumbs','60','g'],['Egg','1','pcs'],
+      ['Onion, finely diced','0.5','small'],['Garlic','1','clove'],['Ground cumin','1','tsp'],
+      ['Smoked paprika','1','tsp'],['Salt',null,'to taste'],['Oil, for frying','2','tbsp']
+    ],
+    steps:[
+      'Drain and rinse the black beans, then pat them dry with a kitchen towel.',
+      'Mash about two-thirds of the beans with a fork, leaving the rest whole for texture.',
+      'Mix the mashed and whole beans with the diced onion, minced garlic, breadcrumbs, egg, cumin, smoked paprika, and salt.',
+      'Shape into 4 patties. If you have time, chill them in the fridge for 15 minutes to help them hold together.',
+      'Heat the oil in a pan over medium heat and fry the patties for 5–6 minutes per side, until browned and heated through.'
+    ],
+    mistakes:[
+      'Mashing all the beans completely smooth instead of leaving some whole loses the texture that holds the burger together.',
+      'Skipping the pat-dry step leaves the mixture too wet, and the patties fall apart in the pan.',
+      'Flipping too early, before a crust has formed on the underside, causes them to break apart.'
+    ],
+    spiceTip:'A pinch of cayenne or chipotle powder in the mix adds real smokiness and heat.',
+    sideIds:['s0-9','s0-7'], side:null
+  },
+
+  {
+    id:'t1-17', tier:1, name:'Pan-Seared Tofu with Peanut Sauce', desc:'A real technique jump from the stir-fry \u2014 pressing and searing tofu properly.', xp:15,
+    tags:['vegetarian','family'], servings:2, prepTime:'15 min (plus 15 min pressing)', cookTime:'12 min',
+    ingredients:[
+      ['Firm or extra-firm tofu','400','g'],['Cornstarch','2','tbsp'],['Neutral oil','2','tbsp'],
+      ['Peanut butter','3','tbsp'],['Soy sauce','2','tbsp'],['Rice vinegar','1','tbsp'],
+      ['Honey or maple syrup','1','tbsp'],['Garlic','1','clove'],['Fresh ginger, grated','0.5','tsp'],
+      ['Water, to thin the sauce','3-4','tbsp'],['Sesame seeds (optional)',null,'for garnish'],
+      ['Spring onion, sliced (optional)',null,'for garnish']
+    ],
+    steps:[
+      'Press the tofu for at least 15 minutes (wrapped in a clean towel, weighed down with something heavy) to remove excess water \u2014 this is what lets it sear properly.',
+      'Cut the pressed tofu into cubes or slabs and toss lightly in cornstarch.',
+      'Heat the oil in a non-stick pan over medium-high heat. Add the tofu in a single layer and don\u2019t move it for 3–4 minutes, until a golden crust forms.',
+      'Flip and sear the other sides the same way, about 8–10 minutes total, until crisp on multiple sides.',
+      'Meanwhile, whisk the peanut butter, soy sauce, rice vinegar, honey, garlic, and ginger together with enough water to reach a pourable consistency.',
+      'Drizzle the sauce over the seared tofu, or serve it on the side for dipping. Garnish with sesame seeds and spring onion if using.'
+    ],
+    mistakes:[
+      'Skipping the pressing step is the single biggest reason tofu doesn\u2019t sear \u2014 trapped water steams it instead of browning it.',
+      'Moving the tofu around the pan too soon stops a crust from forming; leave each side undisturbed until it releases easily.',
+      'A cold or overcrowded pan drops the temperature and the tofu ends up soft rather than crisp \u2014 use a wide pan and don\u2019t crowd it.'
+    ],
+    spiceTip:'A pinch of chili flakes or a small drizzle of sriracha in the peanut sauce adds welcome heat against the sweetness.',
+    sideIds:['s0-1'], side:null
+  },
+
+  {
+    id:'t1-18', tier:1, name:'Halloumi & Vegetable Skewers', desc:'Searing halloumi properly is its own small skill.', xp:15,
+    tags:['quick','vegetarian','family'], servings:2, prepTime:'15 min', cookTime:'10 min',
+    ingredients:[
+      ['Halloumi, cubed','250','g'],['Zucchini','1','pcs'],['Bell peppers, mixed colors','2','pcs'],
+      ['Red onion','1','pcs'],['Cherry tomatoes','150','g'],['Olive oil','2','tbsp'],
+      ['Dried oregano','1','tsp'],['Lemon','1','pcs'],['Salt',null,'to taste'],['Pepper',null,'to taste'],
+      ['Skewers (metal, or wooden soaked in water)',null,'as needed']
+    ],
+    steps:[
+      'If using wooden skewers, soak them in water for 20 minutes so they don\u2019t burn.',
+      'Cut the halloumi, zucchini, peppers, and onion into similar-sized chunks.',
+      'Thread the halloumi and vegetables onto the skewers, alternating pieces.',
+      'Brush with olive oil and sprinkle with oregano, salt, and pepper.',
+      'Sear in a hot pan or grill pan for 8–10 minutes, turning occasionally, until the halloumi is golden and the vegetables are lightly charred.',
+      'Finish with a squeeze of lemon before serving.'
+    ],
+    mistakes:[
+      'Overcrowding the pan with too many skewers at once steams instead of searing \u2014 cook in batches if needed.',
+      'Cutting the halloumi too small makes it crumble apart on the skewer; keep the cubes fairly generous.',
+      'Skipping the skewer soak for wooden ones risks them scorching before the food is done.'
+    ],
+    spiceTip:'A pinch of chili flakes or smoked paprika in the oil rub adds a nice edge against the salty halloumi.',
+    sideIds:['s1-6','s0-12'], side:null
+  },
+  {
+    id:'t1-19', tier:1, name:'Black Bean Enchiladas', desc:'Rolling and baking technique, built on the black beans already in the tree.', xp:15,
+    tags:['vegetarian','freezer','family'], servings:4, prepTime:'20 min', cookTime:'25 min',
+    ingredients:[
+      ['Black beans (tinned)','400','g'],['Corn (tinned or frozen)','150','g'],['Onion','1','pcs'],
+      ['Garlic','2','cloves'],['Ground cumin','1','tsp'],['Chili powder','1','tsp'],
+      ['Small tortillas','8','pcs'],['Enchilada sauce (or spiced crushed tomatoes)','500','ml'],
+      ['Cheese, grated','200','g'],['Oil','1','tbsp'],['Salt',null,'to taste'],
+      ['Fresh cilantro (optional)',null,'to garnish']
+    ],
+    steps:[
+      'Preheat the oven to 200°C.',
+      'Sauté the diced onion in oil until soft, about 5 minutes. Add the garlic, cumin, and chili powder, and cook for 1 minute.',
+      'Stir in the drained black beans and corn, mashing lightly with a fork so the mixture holds together, and season with salt.',
+      'Spread a thin layer of enchilada sauce in the bottom of a baking dish.',
+      'Fill each tortilla with the bean mixture, roll tightly, and place seam-side down in the dish.',
+      'Pour the remaining sauce over the top and scatter with cheese.',
+      'Bake for 20–25 minutes, until bubbling and the cheese is golden.'
+    ],
+    mistakes:[
+      'Overfilling the tortillas makes them impossible to roll without tearing.',
+      'Skipping the sauce layer on the bottom of the dish means the enchiladas can stick and burn.',
+      'Leaving the bean filling completely unmashed can make it spill out when you slice in \u2014 a light mash helps everything hold together.'
+    ],
+    spiceTip:'A diced jalapeño in the filling, or a drizzle of hot sauce on top, adds real heat if you want it.',
+    sideIds:['s0-12'], side:null
+  },
+  {
+    id:'t1-20', tier:1, name:'Miso Soup with Tofu', desc:'A simple broth technique, very different from anything else here.', xp:15,
+    tags:['quick','vegetarian','family'], servings:2, prepTime:'5 min', cookTime:'10 min',
+    ingredients:[
+      ['Water','600','ml'],['Kombu (dried kelp, optional, for stock)','5','g'],
+      ['Miso paste','3','tbsp'],['Soft or silken tofu, cubed','200','g'],
+      ['Dried wakame seaweed','1','tbsp'],['Spring onion, sliced','2','pcs']
+    ],
+    steps:[
+      'If making the stock from scratch, gently heat the water with the kombu for 5 minutes \u2014 don\u2019t let it boil hard \u2014 then remove the kombu.',
+      'In a small bowl, whisk a ladleful of the hot stock into the miso paste until smooth. This keeps the miso from clumping once it goes back in.',
+      'Return the miso mixture to the pot along with the tofu and wakame, and warm gently over low heat. Don\u2019t let it boil once the miso is in.',
+      'Ladle into bowls and top with sliced spring onion.',
+      'Short on time or ingredients? A packaged instant miso soup mix works as a shortcut base \u2014 just stir in fresh cubed tofu and spring onion once it\u2019s made up, and it tastes noticeably fresher than using it plain.'
+    ],
+    mistakes:[
+      'Boiling the soup hard once the miso paste is in cooks off a lot of its delicate flavor and aroma \u2014 keep it at a gentle simmer at most.',
+      'Adding the miso paste directly to the pot without dissolving it first leaves stubborn clumps floating in the soup.',
+      'Firm tofu instead of soft or silken changes the texture quite a bit \u2014 soft tofu is the traditional choice here.'
+    ],
+    spiceTip:'A little grated ginger or a drizzle of sesame oil at the end adds a nice extra layer.',
+    sideIds:['s0-1'], side:null
+  },
+  {
+    id:'t1-21', tier:1, name:'Slow Cooker Vegetable & Barley Stew', desc:'A proper showcase for the slow cooker.', xp:15,
+    tags:['vegetarian','freezer','family'], servings:4, prepTime:'15 min', cookTime:'6\u20137 hrs (slow cooker)',
+    ingredients:[
+      ['Pearl barley','150','g'],['Carrots','3','pcs'],['Celery','2','stalks'],['Onion','1','pcs'],
+      ['Garlic','3','cloves'],['Vegetable stock','1.2','l'],['Crushed tomatoes (tinned)','400','g'],
+      ['Mixed mushrooms','200','g'],['Dried thyme','1','tsp'],['Bay leaf','1','pcs'],
+      ['Olive oil','2','tbsp'],['Salt',null,'to taste'],['Pepper',null,'to taste']
+    ],
+    steps:[
+      'Heat the oil in a pan and sauté the onion, carrot, and celery for 5 minutes to build flavor. (Optional \u2014 you can skip this and add everything raw for zero active cooking, but it\u2019ll taste a bit flatter.)',
+      'Add the sautéed vegetables (or raw, if skipping the step above), barley, garlic, mushrooms, tomatoes, stock, thyme, and bay leaf to the slow cooker.',
+      'Cook on low for 6–7 hours, or on high for 3–4 hours, until the barley is tender and the vegetables are soft.',
+      'Remove the bay leaf, season with salt and pepper, and serve.'
+    ],
+    mistakes:[
+      'Skipping the sauté step is fine for convenience, but the stew will taste noticeably flatter \u2014 worth the extra 5 minutes if you have them.',
+      'Barley expands a lot as it cooks \u2014 don\u2019t fill the slow cooker more than two-thirds full or it can overflow.',
+      'Forgetting to remove the bay leaf before serving is a classic (harmless, but annoying) miss.'
+    ],
+    spiceTip:'A splash of soy sauce or a spoon of miso stirred in near the end adds real umami depth.',
+    sideIds:['s0-3'], side:null
+  },
+  {
+    id:'t1-22', tier:1, name:'Air Fryer Vegetable Tempura', desc:'Crisp without deep frying.', xp:15,
+    tags:['quick','vegetarian','family','airfryer'], servings:2, prepTime:'15 min', cookTime:'12 min',
+    ingredients:[
+      ['Mixed vegetables (bell pepper, zucchini, broccoli, sweet potato)','400','g'],
+      ['Flour','100','g'],['Cornstarch','30','g'],['Ice-cold sparkling water','150','ml'],
+      ['Salt',null,'to taste'],['Oil spray',null,'as needed']
+    ],
+    steps:[
+      'Cut the vegetables into bite-sized, even pieces.',
+      'Whisk the flour, cornstarch, and a pinch of salt together, then whisk in the ice-cold sparkling water just until combined \u2014 a few lumps are fine, don\u2019t overmix.',
+      'Preheat the air fryer to 200°C.',
+      'Dip the vegetable pieces in the batter, letting excess drip off, and arrange in a single layer in the basket. Lightly spray with oil.',
+      'Air fry for 10–12 minutes, shaking or turning halfway, until golden and crisp.'
+    ],
+    mistakes:[
+      'Overmixing the batter develops gluten and makes it gummy instead of light and crisp \u2014 a lumpy batter is actually what you want.',
+      'Warm batter or warm water instead of ice-cold makes for a heavier, less crisp coating.',
+      'Skipping the oil spray on the battered pieces leaves them pale and dry instead of golden.'
+    ],
+    spiceTip:'A pinch of cayenne in the batter, or a drizzle of sriracha mayo for dipping, adds a nice kick.',
+    side:'Serve with soy sauce or a squeeze of lemon for dipping.'
   },
 
   // ---------- Sides (Tier 0) ----------
@@ -1193,6 +1520,71 @@ const SEED_RECIPES = [
     spiceTip:'A pinch of cinnamon alongside the paprika brings out the sweetness.'
   },
 
+  {
+    id:'s0-10', tier:0, name:'Crispy Air Fryer Chickpeas', desc:'A crunchy snack or salad topper, straight from a can.', xp:5,
+    tags:['quick','vegetarian','side','airfryer'], servings:2, prepTime:'5 min', cookTime:'18 min',
+    ingredients:[
+      ['Chickpeas (tinned)','400','g'],['Olive oil','1.5','tbsp'],['Paprika','1','tsp'],
+      ['Garlic powder','0.5','tsp'],['Salt',null,'to taste'],['Pepper',null,'to taste']
+    ],
+    steps:[
+      'Drain and rinse the chickpeas, then pat them very dry with a kitchen towel \u2014 the drier, the crispier.',
+      'Toss with the olive oil, paprika, garlic powder, salt, and pepper.',
+      'Air fry at 200°C for 15–18 minutes, shaking the basket every 5 minutes, until golden and crunchy.',
+      'Let them cool for a couple of minutes before eating \u2014 they crisp up further as they cool.'
+    ],
+    mistakes:[
+      'Skipping a thorough pat-dry is the single biggest reason these come out soft instead of crispy \u2014 moisture is the enemy here.',
+      'Overcrowding the basket cooks them unevenly \u2014 shake often or work in batches.',
+      'Eating them straight out of the fryer skips extra crunch \u2014 they firm up as they cool.'
+    ],
+    spiceTip:'Cumin and a pinch of cayenne make a nice variation if you want something with more kick.'
+  },
+
+  {
+    id:'s0-11', tier:0, name:'Black Bean & Corn Salad', desc:'No-cook, fast, and built from a can of black beans.', xp:5,
+    tags:['quick','vegetarian','side','family'], servings:3, prepTime:'12 min', cookTime:null,
+    ingredients:[
+      ['Black beans (tinned)','400','g'],['Corn (tinned or thawed frozen)','200','g'],
+      ['Red onion, finely diced','0.5','pcs'],['Red bell pepper, diced','1','pcs'],
+      ['Fresh cilantro, chopped',null,'a small handful'],['Lime juice','2','tbsp'],
+      ['Olive oil','2','tbsp'],['Ground cumin','0.5','tsp'],['Salt',null,'to taste'],['Pepper',null,'to taste']
+    ],
+    steps:[
+      'Drain and rinse the black beans and corn.',
+      'Combine the beans, corn, red onion, and bell pepper in a bowl.',
+      'Whisk the lime juice, olive oil, cumin, salt, and pepper together.',
+      'Toss the salad with the dressing and stir in the cilantro. Let it sit for a few minutes before serving so the flavors meld.'
+    ],
+    mistakes:[
+      'Skipping the rinse leaves the beans coated in starchy canning liquid that dulls the dressing.',
+      'Serving it immediately without letting it sit misses the flavors coming together.',
+      'Overdressing drowns the beans and vegetables instead of coating them lightly.'
+    ],
+    spiceTip:'A pinch of chili powder or a diced jalapeño adds a nice kick if you want more heat.'
+  },
+
+  {
+    id:'s0-12', tier:0, name:'Tomato & Onion Salad', desc:'Fresh, no-cook, good next to anything curry-adjacent.', xp:5,
+    tags:['quick','vegetarian','side','family'], servings:2, prepTime:'10 min', cookTime:null,
+    ingredients:[
+      ['Tomatoes','3','pcs'],['Red onion','0.5','pcs'],['Cucumber (optional)','0.5','pcs'],
+      ['Lime or lemon juice','1','tbsp'],['Fresh cilantro, chopped',null,'a small handful'],
+      ['Salt',null,'to taste'],['Pepper',null,'to taste'],['Chili powder (optional)','1','pinch']
+    ],
+    steps:[
+      'Dice the tomatoes, red onion, and cucumber (if using) into small, even pieces.',
+      'Combine in a bowl with the lime juice, cilantro, salt, and pepper.',
+      'Toss gently and let sit for 5–10 minutes before serving so the onion mellows slightly.'
+    ],
+    mistakes:[
+      'Skipping the resting time leaves the raw onion sharp and overpowering.',
+      'Cutting the tomatoes too far ahead makes the salad watery by serving time \u2014 dice close to when you\u2019ll eat it.',
+      'Salting too early draws out too much liquid \u2014 salt closer to serving.'
+    ],
+    spiceTip:'A pinch of chaat masala or ground cumin, if you have it, gives this a more authentic Indian-style edge.'
+  },
+
   // ---------- Sides (Tier 1) ----------
   {
     id:'s1-1', tier:1, name:'Bratkartoffeln (German Fried Potatoes)', desc:'Crisp pan-fried potatoes with onion.', xp:5,
@@ -1277,7 +1669,8 @@ const SEED_RECIPES = [
       'Bread that isn\u2019t stale enough makes a gluey, dense dumpling instead of a light one.',
       'Skipping the full soak time leaves dry pockets inside.'
     ],
-    spiceTip:'A little marjoram alongside the parsley is a classic German touch.'
+    spiceTip:'A little marjoram alongside the parsley is a classic German touch.',
+    side:'Store-bought Rotkohl (braised red cabbage) alongside a roast is the classic way to serve these.'
   },
   {
     id:'s1-5', tier:1, name:'Air Fryer Roasted Vegetables', desc:'The oven version, but faster.', xp:5,
@@ -1524,78 +1917,150 @@ function buildRecipeCard(r, unlocked, cooked){
   return card;
 }
 
+let searchQuery = '';
+
+function renderSearchBar(){
+  const wrap = document.createElement('div');
+  wrap.className = 'search-bar-wrap';
+  wrap.innerHTML = `<input type="text" id="recipeSearchInput" class="search-input" placeholder="Search recipes by name or ingredient...">`;
+  return wrap;
+}
+
+function recipeMatchesSearch(r, q){
+  if(r.name.toLowerCase().includes(q)) return true;
+  if(r.ingredients){
+    return r.ingredients.some(([name]) => name.toLowerCase().includes(q));
+  }
+  return false;
+}
+
+function buildSubsectionLabel(text, type){
+  const label = document.createElement('div');
+  label.className = `subsection-label subsection-${type}`;
+  label.textContent = text;
+  return label;
+}
+
+let activeTierTab = 0;
+
+function renderTierTabs(){
+  const bar = document.createElement('div');
+  bar.className = 'tier-tabs';
+  TIER_META.forEach(meta => {
+    const unlocked = isTierUnlocked(meta.n);
+    const btn = document.createElement('button');
+    btn.className = 'tier-tab-btn' + (activeTierTab === meta.n ? ' active' : '');
+    btn.textContent = `Tier ${meta.n}` + (unlocked ? '' : ' \u{1F512}');
+    btn.addEventListener('click', () => {
+      activeTierTab = meta.n;
+      renderTree();
+    });
+    bar.appendChild(btn);
+  });
+  return bar;
+}
+
 function renderTree(){
   const container = document.getElementById('view-tree');
   container.innerHTML = '';
+  container.appendChild(renderTierTabs());
+  container.appendChild(renderSearchBar());
   container.appendChild(renderFilterBar());
 
-  let anyTierShown = false;
+  const tiersContainer = document.createElement('div');
+  tiersContainer.id = 'tiersContainer';
+  container.appendChild(tiersContainer);
 
-  TIER_META.forEach(meta => {
-    const unlocked = isTierUnlocked(meta.n);
-    const allTierRecipes = allRecipes().filter(r => r.tier === meta.n)
-      .sort((a, b) => (a.tags.includes('side') ? 1 : 0) - (b.tags.includes('side') ? 1 : 0));
-    const recipes = activeFilters.size === 0
-      ? allTierRecipes
-      : allTierRecipes.filter(r => [...activeFilters].every(tag => r.tags.includes(tag)));
-    const cookedIds = uniqueCookedIdsInTier(meta.n);
-    const hasDetails = allTierRecipes.some(r => r.steps);
-
-    if(activeFilters.size > 0 && recipes.length === 0) return;
-    anyTierShown = true;
-
-    const tierDiv = document.createElement('div');
-    tierDiv.className = 'tier';
-    if(unlocked && !previouslyUnlockedTiers.has(meta.n)){
-      tierDiv.classList.add('just-unlocked');
-      previouslyUnlockedTiers.add(meta.n);
-    }
-
-    const head = document.createElement('div');
-    head.className = 'tier-head';
-    head.innerHTML = `<h2><span class="tier-num">Tier ${meta.n}</span> &mdash; ${meta.name}</h2>`;
-    tierDiv.appendChild(head);
-
-    if(!unlocked){
-      const need = TIER_META[meta.n].unlockCount;
-      const have = uniqueCookedIdsInTier(meta.n - 1).size;
-      const note = document.createElement('p');
-      note.className = 'tier-lock-note';
-      note.textContent = `Unlocks after cooking ${need} different Tier ${meta.n - 1} dishes (${have}/${need} so far).`;
-      tierDiv.appendChild(note);
-    } else if(!hasDetails){
-      const note = document.createElement('p');
-      note.className = 'tier-horizon-note';
-      note.textContent = 'On the horizon \u2014 full recipes for this tier are still being written.';
-      tierDiv.appendChild(note);
-    }
-
-    const grid = document.createElement('div');
-    grid.className = 'card-grid';
-
-    recipes.forEach(r => {
-      grid.appendChild(buildRecipeCard(r, unlocked, cookedIds.has(r.id)));
-    });
-
-    tierDiv.appendChild(grid);
-    container.appendChild(tierDiv);
+  const searchInput = document.getElementById('recipeSearchInput');
+  searchInput.value = searchQuery;
+  searchInput.addEventListener('input', (e) => {
+    searchQuery = e.target.value;
+    renderTiers(tiersContainer);
   });
 
-  if(!anyTierShown){
-    const note = document.createElement('p');
-    note.className = 'filter-empty-note';
-    note.textContent = 'Nothing matches that combination of filters.';
-    container.appendChild(note);
+  renderTiers(tiersContainer);
+}
+
+function renderTiers(tiersContainer){
+  tiersContainer.innerHTML = '';
+  const q = searchQuery.trim().toLowerCase();
+  const meta = TIER_META[activeTierTab];
+  const unlocked = isTierUnlocked(meta.n);
+
+  const allTierRecipes = allRecipes().filter(r => r.tier === meta.n)
+    .sort((a, b) => (a.tags.includes('side') ? 1 : 0) - (b.tags.includes('side') ? 1 : 0));
+  let recipes = allTierRecipes;
+  if(activeFilters.size > 0){
+    recipes = recipes.filter(r => [...activeFilters].every(tag => r.tags.includes(tag)));
+  }
+  if(q){
+    recipes = recipes.filter(r => recipeMatchesSearch(r, q));
+  }
+  const cookedIds = uniqueCookedIdsInTier(meta.n);
+  const hasDetails = allTierRecipes.some(r => r.steps);
+
+  const tierDiv = document.createElement('div');
+  tierDiv.className = 'tier';
+  if(unlocked && !previouslyUnlockedTiers.has(meta.n)){
+    tierDiv.classList.add('just-unlocked');
+    previouslyUnlockedTiers.add(meta.n);
   }
 
-  container.querySelectorAll('.cook-btn').forEach(btn => {
+  const head = document.createElement('div');
+  head.className = 'tier-head';
+  head.innerHTML = `<h2><span class="tier-num">Tier ${meta.n}</span> &mdash; ${meta.name}</h2>`;
+  tierDiv.appendChild(head);
+
+  if(!unlocked){
+    const need = TIER_META[meta.n].unlockCount;
+    const have = uniqueCookedIdsInTier(meta.n - 1).size;
+    const note = document.createElement('p');
+    note.className = 'tier-lock-note';
+    note.textContent = `Unlocks after cooking ${need} different Tier ${meta.n - 1} dishes (${have}/${need} so far).`;
+    tierDiv.appendChild(note);
+  } else if(!hasDetails){
+    const note = document.createElement('p');
+    note.className = 'tier-horizon-note';
+    note.textContent = 'On the horizon \u2014 full recipes for this tier are still being written.';
+    tierDiv.appendChild(note);
+  }
+
+  const mains = recipes.filter(r => !r.tags.includes('side'));
+  const sides = recipes.filter(r => r.tags.includes('side'));
+
+  if(mains.length){
+    tierDiv.appendChild(buildSubsectionLabel('Mains', 'mains'));
+    const mainsGrid = document.createElement('div');
+    mainsGrid.className = 'card-grid';
+    mains.forEach(r => mainsGrid.appendChild(buildRecipeCard(r, unlocked, cookedIds.has(r.id))));
+    tierDiv.appendChild(mainsGrid);
+  }
+  if(sides.length){
+    tierDiv.appendChild(buildSubsectionLabel('Sides', 'sides'));
+    const sidesGrid = document.createElement('div');
+    sidesGrid.className = 'card-grid';
+    sides.forEach(r => sidesGrid.appendChild(buildRecipeCard(r, unlocked, cookedIds.has(r.id))));
+    tierDiv.appendChild(sidesGrid);
+  }
+
+  tiersContainer.appendChild(tierDiv);
+
+  if((activeFilters.size > 0 || q) && recipes.length === 0){
+    const note = document.createElement('p');
+    note.className = 'filter-empty-note';
+    note.textContent = q
+      ? `Nothing in Tier ${meta.n} matches \u201c${searchQuery.trim()}\u201d.`
+      : `Nothing in Tier ${meta.n} matches that combination of filters.`;
+    tiersContainer.appendChild(note);
+  }
+
+  tiersContainer.querySelectorAll('.cook-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
-
       logMeal(btn.dataset.recipe);
     });
   });
-  container.querySelectorAll('.pin-btn').forEach(btn => {
+  tiersContainer.querySelectorAll('.pin-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       togglePin(btn.dataset.pin);

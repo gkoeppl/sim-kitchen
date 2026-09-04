@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sim-kitchen-v3';
+const CACHE_NAME = 'sim-kitchen-v10';
 const CORE_ASSETS = [
   './',
   './index.html',
